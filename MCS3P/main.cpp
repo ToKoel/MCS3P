@@ -239,6 +239,7 @@ void sigma_tests(double sigma){
 
 
 int main(int argc, char* argv[]) {
+    std::cout << "dev branch" <<std::endl;
     seed250(SEEED);
     
     if(argv[1] != NULL){
