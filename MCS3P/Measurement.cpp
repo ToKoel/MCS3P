@@ -494,7 +494,7 @@ spinStructure::spinStructure(std::string dipoleInteractions,
 void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeTO, double FeOO_APB, double anisotropyConstant, double alpha, double beta, double gamma, double center, double lattice_a, double lattice_b, double lattice_c, double sigma){
     
     
-    //std::cout << "start spin structure measurement" << std::endl;
+    std::cout << "dev branch" << std::endl;
     Crystal crystal(structure_filename, dipoleInteractions,
                     FeTT, FeOO, FeTO, FeOO_APB, anisotropyConstant,
                     alpha, beta, gamma, macrocell_size, center,

@@ -21,7 +21,7 @@ echo $measurement
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D8_sphere/APB_5T_Fd3m/"
 
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_P43212_0d33Fe2/"
-output_dir="/Users/tobiaskohler/PhD/APB-Paper/Monte-Carlo_Simulation/New_simulations_different_sizes/double_exchanginteraction/D11/"
+output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D6_sphere/no_APB_3T/"
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_P43212_0d83Fe2Fe3Fe4/"
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_Fd3m_0d89Feoct/"
 
@@ -57,7 +57,7 @@ latticepars="8.3965,8.3965,8.3965"
 shape="Sphere"
 
 # particle size in unit cells
-particle_size=11
+particle_size=6
 
 # particle orientation angles
 alpha=0.0
@@ -65,17 +65,17 @@ beta=0.0
 gamma=-45.0
 
 # particle with or without APB
-APB=true
+APB=false
 
 # effective anisotropy constant: K[kJ/m^3] / N_atoms/particle_volume
 anisotropy_constant=3.25e-25
 
 # exchange constants: Fe_TT, Fe_TO, Fe_OO in K
-#exchange_constants="-21.0,-8.6,-28.1"
-exchange_constants="-42.0,-17.2,-56.2"
+exchange_constants="-21.0,-8.6,-28.1"
+#exchange_constants="-42.0,-17.2,-56.2"
 # exchange contant accross APB in K
-#APB_constant=-106.28
-APB_constant=-212.56
+APB_constant=-106.28
+#APB_constant=-212.56
 
 # seed for particle generation
 seed=20210503
@@ -83,7 +83,7 @@ seed=20210503
 #--------------------------
 # field settings
 #--------------------------
-measurement_field=1.5
+measurement_field=3.0
 
 #--------------------------
 # temperature settings
@@ -96,14 +96,14 @@ temperature=0.01
 #--------------------------
 # Number of Monte Carlo steps
 # (statistical number of trial moves on one spin in the structure)
-steps=20000
+steps=5000
 
 # sigma parameter for opening of gaussian cone in trial move
 sigma=0.03
 
 # setting for method of dipole interaction calculation
-#dipole_interactions="brute_force"
-dipole_interactions="None"
+dipole_interactions="brute_force"
+#dipole_interactions="None"
 #dipole_interactions="macrocell_method"
 
 # macrocell size only used if macrocell method is selected

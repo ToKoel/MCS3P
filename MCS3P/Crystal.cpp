@@ -116,6 +116,7 @@ void Crystal::generate_dipole_lists(double lattice_a, double lattice_b, double l
         double b_sq = lattice_b*lattice_b;
         double c_sq = lattice_c*lattice_c;
         for(unsigned int j=0; j< atoms.size(); j++){
+            if(&atoms[i] != &atoms[j]){
             double distance = std::sqrt((atoms[j].x - x)*(atoms[j].x - x)*a_sq+
                                         (atoms[j].y - y)*(atoms[j].y - y)*b_sq+
                                         (atoms[j].z - z)*(atoms[j].z - z)*c_sq);
@@ -134,6 +135,7 @@ void Crystal::generate_dipole_lists(double lattice_a, double lattice_b, double l
             atoms[i].magmag.push_back(MAGFE3*MAGFE3);
 
             atoms[i].allOtherAtomsInCrystal.push_back(&atoms[j]);
+            }
         }
     }
 }

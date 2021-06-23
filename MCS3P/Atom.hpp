@@ -35,6 +35,11 @@ public:
 };
 
 class Atom {
+    /*
+     class to represent atomic magnetic moments with spatial position
+     x,y and z, spin vector components spinx, spiny and spinz and
+     other magnetic properties.
+     */
 public:
     double x = 0;   // atom coordinates
     double y = 0;
@@ -46,20 +51,22 @@ public:
     double uc_y = 0.0;
     double uc_z = 0.0;
     
+    // exchange interaction constants
     double FeTT = 0.0;
     double FeOO = 0.0;
     double FeTO = 0.0;
     double FeOO_APB = 0.0;
+    
     double anisotropyConstant = 0.0;
    
     int APB=0; // APB=1 --> APB position
     int position = 0;// Octahedral = 0 or tetrahedral = 1 position
     bool isApbAtom = false;
     bool isSurfaceAtom = false;
-    int dipole_interactions;
+    int dipole_interactions; // 0 --> brute force, 1 --> macrocell method, 2 --> no dipole interactions
     bool macrocell_method;
     
-    double sigma = 0.0;
+    double sigma = 0.0; // defines opening angle of Gaussian cone
     double MagMagMu0 = MAGFE3*MAGFE3*MU0;
     
     Macrocell* macrocell_link = NULL;
@@ -76,8 +83,14 @@ public:
     std::vector<double> distVecZ;
     std::vector<double> magmag;
 
-    Atom(int dipole_interactions, double x, double y, double z, int position, int APB, double FeTT, double FeOO, double FeTO, double FeOO_APB, double anisotropyConstant);
+    // initializer
+    Atom(int dipole_interactions,
+         double x, double y, double z,
+         int position, int APB,
+         double FeTT, double FeOO, double FeTO, double FeOO_APB,
+         double anisotropyConstant);
     
+    // energy functions
     double anisotropy();
     double exchange();
     double zeeman(double);
@@ -86,6 +99,7 @@ public:
     
     void dipole_field(double*);
     
+    // trial move functions
     void uniform(double *old_spin);
     void uniform_ziggurat(double *old_spin);
     void spin_flip(double*);
@@ -95,7 +109,5 @@ public:
     
     void MonteCarloStep(double Bx, double temperature);
 };
-
-
 
 #endif /* Atom_hpp */

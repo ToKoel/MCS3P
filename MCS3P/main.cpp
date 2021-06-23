@@ -176,20 +176,20 @@ void relaxation_test(double size, double sigma, int steps){
     }
 }
 
-void dipole_calcs(bool APB){
+void dipole_calcs(bool APB, int D_min, int D_max){
     std::ofstream dipole_calcs;
     std::string path = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/dipole_energy_calculations/";
     if(APB){
-        dipole_calcs.open(path+"dipole_calcs_APB.txt");
+        dipole_calcs.open(path+"dipole_calcs_APB_1.txt");
     } else{
-        dipole_calcs.open(path+"dipole_calcs_noAPB.txt");
+        dipole_calcs.open(path+"dipole_calcs_noAPB_1.txt");
     }
     double E_d_aligned = 0.0;
     double E_d_domain = 0.0;
     
     dipole_calcs << "Diameter" << " " << "E_a_aligned" << " " << "E_a_domain" << " " << "E_e_aligned" << " " << "E_e_domain" << " " <<  "E_z_aligned" << " " << "E_z_domain" << " " << "E_d_aligned" << " " << "E_d_domain" <<  std::endl;
     
-    for(int j=3; j<12; j++){
+    for(int j=D_min; j<=D_max; j++){
     for(int i=1; i<21; i++){
         double c = j/2.0 + 0.5;
         std::string f = "D" + std::to_string(j);
@@ -206,7 +206,6 @@ void dipole_calcs(bool APB){
         retVals retVals_domain = particle_configurations_test("domain",
                                  path+f,
                                  path+out_domain, c);
-//        dipole_calcs << j << " " << E_d_aligned << " " << E_d_domain << " " << E_a_aligned << " " << E_a_domain << " " <<  E_e_aligned << " " << E_e_domain << " " << E_z_aligned << " " << E_z_domain << std::endl;
         
         dipole_calcs << j << " " << retVals_aligned.E_a << " " << retVals_domain.E_a << " " << retVals_aligned.E_e << " " << retVals_domain.E_e << " " <<  retVals_aligned.E_z << " " << retVals_domain.E_z << " " << retVals_aligned.E_d << " " << retVals_domain.E_d << std::endl;
         }
@@ -239,15 +238,13 @@ void sigma_tests(double sigma){
 
 
 int main(int argc, char* argv[]) {
-    std::cout << "dev branch" <<std::endl;
+    std::cout << "dev branch" << std::endl;
     seed250(SEEED);
     
     if(argv[1] != NULL){
         std::string configfile = argv[1];
         std::ifstream ifs(configfile);
         nlohmann::json jf = nlohmann::json::parse(ifs);
-        
-    
         
         double macrocell_size;
         if(jf["dipole_interactions"]=="macrocell_method"){
@@ -355,7 +352,7 @@ int main(int argc, char* argv[]) {
              jf["sigma"]);
         }
     } else{
-//        dipole_calcs(false);
+        dipole_calcs(false, 3, 4);
 //        dipole_calcs(true);
         
         
