@@ -1,0 +1,45 @@
+
+#======================================================================
+# CRYSTAL DATA
+#----------------------------------------------------------------------
+data_VESTA_phase_1
+
+_chemical_name_common                  'Fe3 O4'
+_cell_length_a                         8.396500
+_cell_length_b                         8.396500
+_cell_length_c                         8.396500
+_cell_angle_alpha                      90.000000
+_cell_angle_beta                       90.000000
+_cell_angle_gamma                      90.000000
+_cell_volume                           591.963351
+_space_group_name_H-M_alt              'P 43 21 2'
+_space_group_IT_number                 96
+
+loop_
+_space_group_symop_operation_xyz
+   'x, y, z'
+   '-x, -y, z+1/2'
+   '-y+1/2, x+1/2, z+3/4'
+   'y+1/2, -x+1/2, z+1/4'
+   '-x+1/2, y+1/2, -z+3/4'
+   'x+1/2, -y+1/2, -z+1/4'
+   'y, x, -z'
+   '-y, -x, -z+1/2'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   Fe1         1.0     0.7469000     0.9985000     0.12010000    Biso  1.000000 Fe
+   Fe2         1.0     0.36720000     0.63280000     0.750000    Biso  1.000000 Fe
+   Fe3         1.0     0.1205000     0.87950000     0.250000    Biso  1.000000 Fe
+   Fe4         1.0     0.3685000     0.8683000     0.9866000    Biso  1.000000 Fe
+   O1          1.0     0.141400     0.3833000     0.5077000    Biso  1.000000 O
+   O2          1.0     0.3794000     0.1314000     0.0013000    Biso  1.000000 O
+   O3          1.0     0.1299000     0.8676000     0.0232000    Biso  1.000000 O
+   O4          1.0     0.3749000     0.6293000     0.9933000    Biso  1.000000 O

@@ -1,0 +1,58 @@
+
+#======================================================================
+# CRYSTAL DATA
+#----------------------------------------------------------------------
+data_VESTA_phase_1
+
+_chemical_name_common                  'Fe3 O4'
+_cell_length_a                         8.396500
+_cell_length_b                         8.396500
+_cell_length_c                         8.396500
+_cell_angle_alpha                      90.000000
+_cell_angle_beta                       90.000000
+_cell_angle_gamma                      90.000000
+_cell_volume                           591.963351
+_space_group_name_H-M_alt              'P 43 3 2'
+_space_group_IT_number                 212
+
+loop_
+_space_group_symop_operation_xyz
+   'x, y, z'
+   '-x+1/2, -y, z+1/2'
+   '-x, y+1/2, -z+1/2'
+   'x+1/2, -y+1/2, -z'
+   'z, x, y'
+   'z+1/2, -x+1/2, -y'
+   '-z+1/2, -x, y+1/2'
+   '-z, x+1/2, -y+1/2'
+   'y, z, x'
+   '-y, z+1/2, -x+1/2'
+   'y+1/2, -z+1/2, -x'
+   '-y+1/2, -z, x+1/2'
+   'y+1/4, x+3/4, -z+3/4'
+   '-y+1/4, -x+1/4, -z+1/4'
+   'y+3/4, -x+3/4, z+1/4'
+   '-y+3/4, x+1/4, z+3/4'
+   'x+1/4, z+3/4, -y+3/4'
+   '-x+3/4, z+1/4, y+3/4'
+   '-x+1/4, -z+1/4, -y+1/4'
+   'x+3/4, -z+3/4, y+1/4'
+   'z+1/4, y+3/4, -x+3/4'
+   'z+3/4, -y+3/4, x+1/4'
+   '-z+3/4, y+1/4, x+3/4'
+   '-z+1/4, -y+1/4, -x+1/4'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   Fe1         1.0     0.992000     0.992000     0.992000    Biso  1.000000 Fe
+   Fe2         1.0     0.625000     0.625000     0.625000    Biso  1.000000 Fe
+   Fe3         1.0     0.365000     0.885000     0.125000    Biso  1.000000 Fe
+   O1          1.0     0.375000     0.375000     0.375000    Biso  1.000000 O
+   O2          1.0     0.672000     0.122000     0.874000    Biso  1.000000 O
