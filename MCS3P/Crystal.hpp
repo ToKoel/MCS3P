@@ -38,11 +38,13 @@ public:
     void structure_snapshot(std::string filename);
     void reset_structure();
     int outputStats();
-    void update_temperature(double temperature);
     void set_sigma(double sigma);
     void generate_dipole_lists();
     void generate_neighbour_lists();
-    void read_structure_from_file(std::string filename,std::string dipole_interactions, double FeTT, double FeOO, double FeTO, double FeOO_APB, double anisotropyConstant);
+    void read_structure_from_file(std::string filename,
+                                  std::string dipole_interactions,
+                                  double FeTT, double FeOO, double FeTO, double FeOO_APB,
+                                  double anisotropyConstant);
     
     std::vector<Macrocell> macrocells;
     void generate_macrocells(double macrocell_size);

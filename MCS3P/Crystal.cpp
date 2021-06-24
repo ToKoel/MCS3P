@@ -176,13 +176,6 @@ void Crystal::structure_snapshot(std::string filename){
        }
 }
 
-void Crystal::update_temperature(double temperature){
-    for(int i=0; i<atoms.size(); i++){
-        double kBT = MUB/(temperature*KB);
-        atoms[i].sigma = 0.08 * std::pow(1.0/kBT,0.2);
-    }
-}
-
 void Crystal::generate_macrocells(double macrocell_size){
     double center_x=0.0,center_y=0.0, center_z=0.0;
     for(int i=0; i<atoms.size(); i++){
@@ -413,12 +406,17 @@ void Crystal::rotateCrystal(double alpha,double beta,double gamma, double center
     double center_x = center;
     double center_y = center;
     double center_z = center;
+    
+    double x, y, z;
+    double x2, y2, z2;
+    double x3, y3, z3;
 
 
     for (unsigned int i = 0 ; i< atoms.size(); i++){
-        double x = atoms[i].x - center_x;
-        double y = atoms[i].y - center_y;
-        double z = atoms[i].z - center_z;
+        // set particle into coordinate system origin
+        x = atoms[i].x - center_x;
+        y = atoms[i].y - center_y;
+        z = atoms[i].z - center_z;
 
         // x-rotation with rotation matrix
         atoms[i].x = x*1.0 + y*0.0 + z*0.0;
@@ -426,18 +424,18 @@ void Crystal::rotateCrystal(double alpha,double beta,double gamma, double center
         atoms[i].z = x*0.0 + y*std::sin(alphaRad) + z*std::cos(alphaRad);
 
         // temporary storing the new coordinates
-        double x2 = atoms[i].x;
-        double y2 = atoms[i].y;
-        double z2 = atoms[i].z;
+        x2 = atoms[i].x;
+        y2 = atoms[i].y;
+        z2 = atoms[i].z;
 
         // y-rotation
         atoms[i].x = x2*std::cos(betaRad) + y2*0.0 + z2*std::sin(betaRad);
         atoms[i].y = x2*0.0 + y2*1.0 + z2*0.0;
         atoms[i].z = x2*-(std::sin(betaRad)) + y2*0.0 + z2*std::cos(betaRad);
 
-        double x3 = atoms[i].x;
-        double y3 = atoms[i].y;
-        double z3 = atoms[i].z;
+        x3 = atoms[i].x;
+        y3 = atoms[i].y;
+        z3 = atoms[i].z;
 
         // z-rotation
         atoms[i].x = x3*std::cos(gammaRad) + y3*-(std::sin(gammaRad)) + z3*0.0;

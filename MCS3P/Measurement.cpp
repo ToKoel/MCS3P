@@ -418,7 +418,7 @@ void MvsBMeasurement::fieldSweep(std::string output_dir, std::string structure_f
             //std::cout << temperature_arr[i] << std::endl;
         }
         //std::cout << "start field sweep" << std::endl;
-        crystal.update_temperature(temperature);
+        //crystal.update_temperature(temperature);
         for(int j=0; j<=BnumberOfSteps; j++){
             
             for(int k = 0; k<steps*totalNumAtoms; k++){
@@ -499,7 +499,6 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
                     FeTT, FeOO, FeTO, FeOO_APB, anisotropyConstant,
                     alpha, beta, gamma, macrocell_size, center,
                     lattice_a, lattice_b, lattice_c, sigma);
-    crystal.update_temperature(temperature);
 
     int totalNumAtoms = int(crystal.atoms.size());
 
