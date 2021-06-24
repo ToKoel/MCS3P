@@ -21,7 +21,7 @@ echo $measurement
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D8_sphere/APB_5T_Fd3m/"
 
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_P43212_0d33Fe2/"
-output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D6_sphere/no_APB_3T/"
+output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/APB_5T/"
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_P43212_0d83Fe2Fe3Fe4/"
 #output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_Fd3m_0d89Feoct/"
 
@@ -57,7 +57,7 @@ latticepars="8.3965,8.3965,8.3965"
 shape="Sphere"
 
 # particle size in unit cells
-particle_size=6
+particle_size=11
 
 # particle orientation angles
 alpha=0.0
@@ -65,7 +65,7 @@ beta=0.0
 gamma=-45.0
 
 # particle with or without APB
-APB=false
+APB=true
 
 # effective anisotropy constant: K[kJ/m^3] / N_atoms/particle_volume
 anisotropy_constant=3.25e-25
@@ -83,7 +83,7 @@ seed=20210503
 #--------------------------
 # field settings
 #--------------------------
-measurement_field=3.0
+measurement_field=5.0
 
 #--------------------------
 # temperature settings
@@ -102,8 +102,8 @@ steps=5000
 sigma=0.03
 
 # setting for method of dipole interaction calculation
-dipole_interactions="brute_force"
-#dipole_interactions="None"
+#dipole_interactions="brute_force"
+dipole_interactions="None"
 #dipole_interactions="macrocell_method"
 
 # macrocell size only used if macrocell method is selected

@@ -13,31 +13,28 @@ Crystal::Crystal(std::string filename, std::string dipole_interactions,
                  double FeTT, double FeOO, double FeTO, double FeOO_APB,
                  double anisotropyConstant, double alpha, double beta,
                  double gamma, double macrocell_size, double center,
-                 double lattice_a, double lattice_b, double lattice_c, double sigma){
+                 double lattice_a, double lattice_b, double lattice_c, double sigma):
+                 lattice_a(lattice_a), lattice_b(lattice_b), lattice_c(lattice_c){
     
-    read_structure_from_file(filename, dipole_interactions,  FeTT,  FeOO,  FeTO,  FeOO_APB, anisotropyConstant);
+    read_structure_from_file(filename, dipole_interactions,
+                             FeTT,  FeOO,  FeTO,  FeOO_APB,
+                             anisotropyConstant);
     set_sigma(sigma);
     rotateCrystal(alpha, beta, gamma, center);
     generate_neighbour_lists();
 
     if(dipole_interactions == "brute_force"){
-        generate_dipole_lists(lattice_a, lattice_b, lattice_c);
-        //std::cout << "    Dipole interactions are calculated directly!" << std::endl;
+        generate_dipole_lists();
     } else if(dipole_interactions == "macrocell_method"){
         generate_macrocells(macrocell_size);
-        //std::cout << "    Dipole interactions are approximated with macrocells!" << std::endl;
-
-    } else {
-        //std::cout << "    No dipole interactions considered!" << std::endl;
     }
-    //std::cout << "Crystal initialized!" << std::endl;
-    
-    
-    //outputStats();
 }
 
-void Crystal::read_structure_from_file(std::string filename,std::string dipole_interactions, double FeTT, double FeOO, double FeTO, double FeOO_APB, double anisotropyConstant){
-    //std::cout << "    Reading crystal structure data from file..." << std::endl;
+void Crystal::read_structure_from_file(std::string filename,
+                                       std::string dipole_interactions,
+                                       double FeTT, double FeOO, double FeTO, double FeOO_APB,
+                                       double anisotropyConstant){
+
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> z;
@@ -52,10 +49,9 @@ void Crystal::read_structure_from_file(std::string filename,std::string dipole_i
             ++num;
     }
     inFile.close();
-    //std::cout << "    Number of lines in input file: " << num << std::endl;
     
-    x.resize(num);y.resize(num);z.resize(num);
-    pos.resize(num);apb.resize(num);
+    x.resize(num); y.resize(num); z.resize(num);
+    pos.resize(num); apb.resize(num);
     
     inFile.open(filename);
     for(int i =0; i<num; i++){
@@ -69,7 +65,6 @@ void Crystal::read_structure_from_file(std::string filename,std::string dipole_i
         apb[i] = apbr;
     }
     inFile.close();
-    //std::cout << "    Structure file reading successfull!" << std::endl;
     
     int dip;
     if(dipole_interactions == "brute_force"){
@@ -81,19 +76,25 @@ void Crystal::read_structure_from_file(std::string filename,std::string dipole_i
     }
     
     for(int i=0; i<num; i++){
-        atoms.push_back(Atom(dip, x[i], y[i], z[i], pos[i], apb[i], FeTT,  FeOO,  FeTO, FeOO_APB, anisotropyConstant));
+        atoms.push_back(Atom(dip,
+                             x[i], y[i], z[i],
+                             pos[i], apb[i],
+                             FeTT,  FeOO,  FeTO, FeOO_APB,
+                             anisotropyConstant));
     }
 }
 
 void Crystal::generate_neighbour_lists(){
+    double xx, yy, zz;
+    
     for(int i=0; i<atoms.size(); i++){
         atoms[i].neighboursAntiparallel.reserve(12);
         atoms[i].neighboursParallel.reserve(12);
         
         for(int j=0; j<atoms.size(); j++){
-            double xx = atoms[j].x - atoms[i].x;
-            double yy = atoms[j].y - atoms[i].y;
-            double zz = atoms[j].z - atoms[i].z;
+            xx = atoms[j].x - atoms[i].x;
+            yy = atoms[j].y - atoms[i].y;
+            zz = atoms[j].z - atoms[i].z;
     
             if((i!=j) and ((xx*xx + yy*yy + zz*zz) < 0.2505)){
                 if(atoms[i].position == atoms[j].position){
@@ -107,37 +108,43 @@ void Crystal::generate_neighbour_lists(){
     }
 }
 
-void Crystal::generate_dipole_lists(double lattice_a, double lattice_b, double lattice_c){
+void Crystal::generate_dipole_lists(){
+    double x, y, z;
+    double a_sq, b_sq, c_sq;
+    double distance;
+    double rx, ry, rz;
+    
+    a_sq = lattice_a*lattice_a;
+    b_sq = lattice_b*lattice_b;
+    c_sq = lattice_c*lattice_c;
+    
     for(unsigned int i=0; i< atoms.size(); i++){
-        double x = atoms[i].x;
-        double y = atoms[i].y;
-        double z = atoms[i].z;
-        double a_sq = lattice_a*lattice_a;
-        double b_sq = lattice_b*lattice_b;
-        double c_sq = lattice_c*lattice_c;
+        x = atoms[i].x;
+        y = atoms[i].y;
+        z = atoms[i].z;
         for(unsigned int j=0; j< atoms.size(); j++){
             if(&atoms[i] != &atoms[j]){
-            double distance = std::sqrt((atoms[j].x - x)*(atoms[j].x - x)*a_sq+
-                                        (atoms[j].y - y)*(atoms[j].y - y)*b_sq+
-                                        (atoms[j].z - z)*(atoms[j].z - z)*c_sq);
+                distance = std::sqrt((atoms[j].x - x)*(atoms[j].x - x)*a_sq+
+                                     (atoms[j].y - y)*(atoms[j].y - y)*b_sq+
+                                     (atoms[j].z - z)*(atoms[j].z - z)*c_sq);
 
-            //unit vectors
-            double rx = (atoms[j].x - x)*lattice_a/distance;
-            double ry = (atoms[j].y - y)*lattice_b/distance;
-            double rz = (atoms[j].z - z)*lattice_c/distance;
+                //unit vectors
+                rx = (atoms[j].x - x)*lattice_a/distance;
+                ry = (atoms[j].y - y)*lattice_b/distance;
+                rz = (atoms[j].z - z)*lattice_c/distance;
 
-            atoms[i].inv_distances_cubed.push_back(1.0/(std::pow((distance),3)));
-            atoms[i].inv_distances_five.push_back(1.0/(std::pow((distance),5)));
-            atoms[i].distVecX.push_back(rx);
-            atoms[i].distVecY.push_back(ry);
-            atoms[i].distVecZ.push_back(rz);
+                atoms[i].inv_distances_cubed.push_back(1.0/(std::pow((distance),3)));
+                atoms[i].inv_distances_five.push_back(1.0/(std::pow((distance),5)));
+                atoms[i].distVecX.push_back(rx);
+                atoms[i].distVecY.push_back(ry);
+                atoms[i].distVecZ.push_back(rz);
 
-            atoms[i].magmag.push_back(MAGFE3*MAGFE3);
+                atoms[i].magmag.push_back(MAGFE3*MAGFE3);
 
-            atoms[i].allOtherAtomsInCrystal.push_back(&atoms[j]);
-            }
-        }
-    }
+                atoms[i].allOtherAtomsInCrystal.push_back(&atoms[j]);
+            } // end of distance calculation
+        } // end of loop over other atoms
+    } // end of loop over all atoms
 }
 
 int Crystal::outputStats(){

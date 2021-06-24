@@ -24,6 +24,11 @@
 class Crystal{
 public:
     std::vector<Atom> atoms;
+    // lattice parameters
+    double lattice_a;
+    double lattice_b;
+    double lattice_c;
+    
     Crystal(std::string filename, std::string dipole_interactions,
             double FeTT, double FeOO, double FeTO, double FeOO_APB,
             double anisotropyConstant, double alpha, double beta,
@@ -35,7 +40,7 @@ public:
     int outputStats();
     void update_temperature(double temperature);
     void set_sigma(double sigma);
-    void generate_dipole_lists(double,double,double);
+    void generate_dipole_lists();
     void generate_neighbour_lists();
     void read_structure_from_file(std::string filename,std::string dipole_interactions, double FeTT, double FeOO, double FeTO, double FeOO_APB, double anisotropyConstant);
     
