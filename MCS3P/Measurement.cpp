@@ -24,46 +24,58 @@ private:
 };
 
 
-Measurement::Measurement(int particleSize, bool antiphaseBoundary, double surfaceLayerThickness, bool dipoleInteractions,bool vacancies, bool cutOff, int steps): particleSize(particleSize), antiphaseBoundary(antiphaseBoundary), surfaceLayerThickness(surfaceLayerThickness), dipoleInteractions(dipoleInteractions),vacancies(vacancies), cutOff(cutOff), steps(steps){
-}
+//Measurement::Measurement(int particleSize,
+//                         bool antiphaseBoundary,
+//                         double surfaceLayerThickness,
+//                         bool dipoleInteractions,
+//                         bool vacancies,
+//                         bool cutOff,
+//                         int steps):
+//particleSize(particleSize),
+//antiphaseBoundary(antiphaseBoundary),
+//surfaceLayerThickness(surfaceLayerThickness),
+//dipoleInteractions(dipoleInteractions),
+//vacancies(vacancies),
+//cutOff(cutOff),
+//steps(steps){
+//}
 
+MvsTMeasurement::MvsTMeasurement(std::string dipoleInteractions,
+                                 double steps,
+                                 int averaging_steps,
+                                 int numOrientations,
+                                 double measurement_field,
+                                 double cooling_field,
+                                 double TUpperLimit,
+                                 double TLowerLimit,
+                                 double TstepSize,
+                                 double macrocell_size):
+dipoleInteractions(dipoleInteractions),
+steps(steps),
+averaging_steps(averaging_steps),
+numOrientations(numOrientations),
+measurement_field(measurement_field),
+cooling_field(cooling_field),
+TUpperLimit(TUpperLimit),
+TLowerLimit(TLowerLimit),
+TstepSize(TstepSize),
+macrocell_size(macrocell_size){
 
-MvsTMeasurement::MvsTMeasurement(std::string dipoleInteractions,double steps,int averaging_steps, int numOrientations, double measurement_field, double cooling_field, double TUpperLimit, double TLowerLimit, double TstepSize, double macrocell_size):dipoleInteractions(dipoleInteractions),steps(steps), averaging_steps(averaging_steps), numOrientations(numOrientations), measurement_field(measurement_field),cooling_field(cooling_field), TUpperLimit(TUpperLimit), TLowerLimit(TLowerLimit), TstepSize(TstepSize), macrocell_size(macrocell_size){
-    
-    TnumberOfSteps = (TUpperLimit-TLowerLimit)/TstepSize;
-    for (int i = 0; i < TnumberOfSteps; i++){
-        Tdown.push_back(TUpperLimit-(TstepSize*i));
-        Tup.push_back(TLowerLimit+(TstepSize*i));
-    }
 }
 
 void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string structure_filename,
                                        double FeTT, double FeOO, double FeTO, double FeOO_APB,
-                                       double anisotropyConstant,bool ZFC, bool FC, double center,double lattice_a, double lattice_b, double lattice_c, double sigma){
+                                       double anisotropyConstant,
+                                       bool ZFC, bool FC,
+                                       double center,
+                                       double lattice_a, double lattice_b, double lattice_c,
+                                       double sigma){
     std::string output_filename = output_dir + structure_filename.substr(structure_filename.find_last_of("/")+1);
     
     std::string cF = num_to_string(cooling_field, 2);
     std::string mF = num_to_string(measurement_field, 3);
     std::string steps_str = num_to_string(steps, 1);
     std::string sigma_str = num_to_string(sigma, 2);
-    
-//    std::string cF = std::to_string((int)(cooling_field))+"d";
-//    cF += std::to_string((int)(cooling_field*10.0-(int)(cooling_field)*10));
-//    cF += std::to_string((int)(cooling_field*100.0-(int)(cooling_field*10.0)*10));
-//    cF += std::to_string((int)(cooling_field*1000.0-(int)(cooling_field*100.0)*10));
-//
-//    std::string mF = std::to_string((int)(measurement_field))+"d";
-//    mF += std::to_string((int)(measurement_field*10.0-(int)(measurement_field)*10));
-//    mF += std::to_string((int)(measurement_field*100.0-(int)(measurement_field*10.0)*10));
-//    mF += std::to_string((int)(measurement_field*1000.0-(int)(measurement_field*100.0)*10));
-//
-//    std::string steps_str = std::to_string((int)(steps)) + "d";
-//    steps_str += std::to_string((int)(steps*10.0-(int)(steps)*10));
-//    steps_str += std::to_string((int)(steps*100.0-(int)(steps*10.0)*10));
-//
-//    std::string sigma_str = std::to_string((int)(sigma)) + "d";
-//    sigma_str += std::to_string((int)(sigma*10.0-(int)(sigma)*10));
-//    sigma_str += std::to_string((int)(sigma*100.0-(int)(sigma*10.0)*10));
  
     output_filename += "_MvsT_sim_cF"+cF+"T_mF"+mF;
     output_filename += "T_"+steps_str+"steps";

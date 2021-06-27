@@ -37,21 +37,28 @@ inline std::string num_to_string(double number, int precision){
     return double_string;
 }
 
-class Measurement{
-public:
-    int particleSize;
-    bool antiphaseBoundary;
-    double surfaceLayerThickness;
-    bool dipoleInteractions;
-    int steps;
-    bool vacancies;
-    bool cutOff;
-    std::string fileName;
-    
-    Measurement(int particleSize, bool antiphaseBoundary, double surfaceLayerThickness, bool dipoleInteractions,bool vacancies, bool cutOff, int steps);
-};
+//class Measurement{
+//public:
+//    int particleSize;
+//    bool antiphaseBoundary;
+//    double surfaceLayerThickness;
+//    bool dipoleInteractions;
+//    int steps;
+//    bool vacancies;
+//    bool cutOff;
+//    std::string fileName;
+//
+//    Measurement(int particleSize,
+//                bool antiphaseBoundary,
+//                double surfaceLayerThickness,
+//                bool dipoleInteractions,
+//                bool vacancies,
+//                bool cutOff,
+//                int steps);
+//};
 
 class MvsTMeasurement{
+    // Class for M(T) simulations.
 public:
     // general settings
     std::string dipoleInteractions;
@@ -67,19 +74,16 @@ public:
     double TLowerLimit;
     double TstepSize;
     
-    int TnumberOfSteps;
-    std::vector<double> Tdown;
-    std::vector<double> Tup;
-    
-    std::vector<double> mxZFC;
+    // arrays to record the magnetization
+    std::vector<double> mxZFC; // Zero field cooled
     std::vector<double> myZFC;
     std::vector<double> mzZFC;
     
-    std::vector<double> mxCFZ;
+    std::vector<double> mxCFZ; // cooling zero field
     std::vector<double> myCFZ;
     std::vector<double> mzCFZ;
     
-    std::vector<double> mxFC;
+    std::vector<double> mxFC; // field cooled
     std::vector<double> myFC;
     std::vector<double> mzFC;
     
