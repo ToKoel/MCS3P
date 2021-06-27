@@ -28,6 +28,7 @@ public:
     double lattice_a;
     double lattice_b;
     double lattice_c;
+    double center;
     
     Crystal(std::string filename, std::string dipole_interactions,
             double FeTT, double FeOO, double FeTO, double FeOO_APB,
@@ -35,6 +36,8 @@ public:
             double gamma, double macrocell_size, double center,
             double lattice_a, double lattice_b, double lattice_c, double sigma);
     void rotateCrystal(double, double, double, double);
+    void random_orientation();
+    void align_along_random_vector();
     void structure_snapshot(std::string filename);
     void reset_structure();
     int outputStats();

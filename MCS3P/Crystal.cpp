@@ -14,7 +14,7 @@ Crystal::Crystal(std::string filename, std::string dipole_interactions,
                  double anisotropyConstant, double alpha, double beta,
                  double gamma, double macrocell_size, double center,
                  double lattice_a, double lattice_b, double lattice_c, double sigma):
-                 lattice_a(lattice_a), lattice_b(lattice_b), lattice_c(lattice_c){
+                 lattice_a(lattice_a), lattice_b(lattice_b), lattice_c(lattice_c), center(center){
     
     read_structure_from_file(filename, dipole_interactions,
                              FeTT,  FeOO,  FeTO,  FeOO_APB,
@@ -446,6 +446,29 @@ void Crystal::rotateCrystal(double alpha,double beta,double gamma, double center
         atoms[i].x = atoms[i].x + center_x;
         atoms[i].y = atoms[i].y + center_y;
         atoms[i].z = atoms[i].z + center_z;
+    }
+}
+
+void Crystal::random_orientation(){
+    double angles[3];
+    rand0_360(angles);
+    rotateCrystal(angles[0], angles[1], angles[2], center);
+}
+
+void Crystal::align_along_random_vector(){
+    reset_structure();
+    double random_magnetization_vector[3];
+    marsaglia(random_magnetization_vector);
+    for(int atom = 0; atom<(int)atoms.size(); atom++){
+        if( atoms[atom].position == 0){
+            atoms[atom].spinx = random_magnetization_vector[0];
+            atoms[atom].spiny = random_magnetization_vector[1];
+            atoms[atom].spinz = random_magnetization_vector[2];
+        } else {
+            atoms[atom].spinx = -random_magnetization_vector[0];
+            atoms[atom].spiny = -random_magnetization_vector[1];
+            atoms[atom].spinz = -random_magnetization_vector[2];
+        }
     }
 }
 
