@@ -25,6 +25,18 @@ std::vector<T> arange(T start, T stop, T step = 1) {
     return values;
 }
 
+inline std::string num_to_string(double number, int precision){
+    std::string double_string = std::to_string((int)(number))+"d";
+    double multiplier = 10.0;
+    int A = 0;
+    for(int i=0; i<precision; i++){
+        A = (int)(number*multiplier - (int)(number*multiplier/10.0)*10);
+        double_string += std::to_string(A);
+        multiplier *= 10.0;
+    }
+    return double_string;
+}
+
 class Measurement{
 public:
     int particleSize;

@@ -352,7 +352,9 @@ int main(int argc, char* argv[]) {
              jf["sigma"]);
         }
     } else{
-        dipole_calcs(false, 3, 4);
+        //dipole_calcs(false, 3, 4);
+    
+        
 //        dipole_calcs(true);
         
         

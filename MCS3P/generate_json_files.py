@@ -153,7 +153,10 @@ def main():
             f.write('"FeTT": %.2f,\n'%(Fe_TT))
             f.write('"FeOO": %.2f,\n'%(Fe_OO))
             f.write('"FeTO": %.2f,\n'%(Fe_TO))
-            f.write('"FeOO_APB": %.2f,\n'%(APB_constant))
+            if APB:
+                f.write('"FeOO_APB": %.2f,\n'%(APB_constant))
+            else:
+                f.write('"FeOO_APB": 0.0,\n')
             f.write('"anisotropy constant": %.2e,\n'%(anisotropy_constant))
             f.write('"lattice_a": %.4f,\n'%(lattice_a))
             f.write('"lattice_b": %.4f,\n'%(lattice_b))
@@ -208,7 +211,10 @@ def main():
             f.write('"FeTT": %.2f,\n'%(Fe_TT))
             f.write('"FeOO": %.2f,\n'%(Fe_OO))
             f.write('"FeTO": %.2f,\n'%(Fe_TO))
-            f.write('"FeOO_APB": %.2f,\n'%(APB_constant))
+            if APB:
+                f.write('"FeOO_APB": %.2f,\n'%(APB_constant))
+            else:
+                f.write('"FeOO_APB": 0.0,\n')
             f.write('"anisotropy constant": %.2e,\n'%(anisotropy_constant))
             if ZFC:
                 f.write('"ZFC": true,\n')

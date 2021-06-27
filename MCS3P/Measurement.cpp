@@ -42,23 +42,28 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
                                        double anisotropyConstant,bool ZFC, bool FC, double center,double lattice_a, double lattice_b, double lattice_c, double sigma){
     std::string output_filename = output_dir + structure_filename.substr(structure_filename.find_last_of("/")+1);
     
-    std::string cF = std::to_string((int)(cooling_field))+"d";
-    cF += std::to_string((int)(cooling_field*10.0-(int)(cooling_field)*10));
-    cF += std::to_string((int)(cooling_field*100.0-(int)(cooling_field*10.0)*10));
-    cF += std::to_string((int)(cooling_field*1000.0-(int)(cooling_field*100.0)*10));
+    std::string cF = num_to_string(cooling_field, 2);
+    std::string mF = num_to_string(measurement_field, 3);
+    std::string steps_str = num_to_string(steps, 1);
+    std::string sigma_str = num_to_string(sigma, 2);
     
-    std::string mF = std::to_string((int)(measurement_field))+"d";
-    mF += std::to_string((int)(measurement_field*10.0-(int)(measurement_field)*10));
-    mF += std::to_string((int)(measurement_field*100.0-(int)(measurement_field*10.0)*10));
-    mF += std::to_string((int)(measurement_field*1000.0-(int)(measurement_field*100.0)*10));
-    
-    std::string steps_str = std::to_string((int)(steps)) + "d";
-    steps_str += std::to_string((int)(steps*10.0-(int)(steps)*10));
-    steps_str += std::to_string((int)(steps*100.0-(int)(steps*10.0)*10));
-    
-    std::string sigma_str = std::to_string((int)(sigma)) + "d";
-    sigma_str += std::to_string((int)(sigma*10.0-(int)(sigma)*10));
-    sigma_str += std::to_string((int)(sigma*100.0-(int)(sigma*10.0)*10));
+//    std::string cF = std::to_string((int)(cooling_field))+"d";
+//    cF += std::to_string((int)(cooling_field*10.0-(int)(cooling_field)*10));
+//    cF += std::to_string((int)(cooling_field*100.0-(int)(cooling_field*10.0)*10));
+//    cF += std::to_string((int)(cooling_field*1000.0-(int)(cooling_field*100.0)*10));
+//
+//    std::string mF = std::to_string((int)(measurement_field))+"d";
+//    mF += std::to_string((int)(measurement_field*10.0-(int)(measurement_field)*10));
+//    mF += std::to_string((int)(measurement_field*100.0-(int)(measurement_field*10.0)*10));
+//    mF += std::to_string((int)(measurement_field*1000.0-(int)(measurement_field*100.0)*10));
+//
+//    std::string steps_str = std::to_string((int)(steps)) + "d";
+//    steps_str += std::to_string((int)(steps*10.0-(int)(steps)*10));
+//    steps_str += std::to_string((int)(steps*100.0-(int)(steps*10.0)*10));
+//
+//    std::string sigma_str = std::to_string((int)(sigma)) + "d";
+//    sigma_str += std::to_string((int)(sigma*10.0-(int)(sigma)*10));
+//    sigma_str += std::to_string((int)(sigma*100.0-(int)(sigma*10.0)*10));
  
     output_filename += "_MvsT_sim_cF"+cF+"T_mF"+mF;
     output_filename += "T_"+steps_str+"steps";
@@ -362,12 +367,12 @@ MvsBMeasurement::MvsBMeasurement(std::string dipoleInteractions,
 void MvsBMeasurement::fieldSweep(std::string output_dir, std::string structure_filename, double FeTT,double FeOO, double FeTO, double FeOO_APB, double anisotropyConstant, double lattice_a,double lattice_b,double lattice_c,double center,double sigma){
     
     std::string output_filename = structure_filename.substr(structure_filename.find_last_of("/")+1);
-    output_filename += "_Hysteresis_sim_"+std::to_string((int)(temperature));
+    output_filename += "_Hysteresis_sim_"+num_to_string(temperature, 1);
     output_filename += "K_"+std::to_string((int)(steps))+"steps";
     output_filename += "_"+std::to_string((int)(numOrientations))+"or";
-    output_filename += "_"+std::to_string((int)(coolingField))+"T";
-    output_filename += "_"+std::to_string((int)(coolingSteps))+"cs";
-    output_filename += "_sT"+std::to_string((int)(startTemp))+"K";
+    output_filename += "_"+num_to_string(coolingField, 2)+"T";
+    output_filename += "_"+num_to_string(coolingSteps, 2)+"cs";
+    output_filename += "_sT"+num_to_string(startTemp, 1)+"K";
     output_filename += "_dip"+dipoleInteractions;
     if(dipoleInteractions == "macrocell_method"){
         output_filename += "_0d" + std::to_string((int)(macrocell_size*100)) + "mcsize";
@@ -397,8 +402,14 @@ void MvsBMeasurement::fieldSweep(std::string output_dir, std::string structure_f
         
         double angles[3];
         rand0_360(angles);
-        //std::cout << "Rotation angles: " << angles[0] << " " << angles[1] << " " << angles[2] << std::endl;
-        Crystal crystal(structure_filename, dipoleInteractions, FeTT, FeOO, FeTO, FeOO_APB, anisotropyConstant, angles[0], angles[1], angles[2],macrocell_size, center,lattice_a, lattice_b, lattice_c,sigma);
+    
+        Crystal crystal(structure_filename, dipoleInteractions,
+                        FeTT, FeOO, FeTO, FeOO_APB,
+                        anisotropyConstant,
+                        angles[0], angles[1], angles[2],
+                        macrocell_size, center,
+                        lattice_a, lattice_b, lattice_c,
+                        sigma);
         
         int totalNumAtoms = int(crystal.atoms.size());
    

@@ -14,7 +14,7 @@ measurement="MvB"
 echo $measurement
 
 # directory for outputs
-output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/Hysteresis/8000steps_morefieldsteps/"
+output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/Hysteresis_sims/P43212_random_vacancies/D8/"
 
 
 #--------------------------
