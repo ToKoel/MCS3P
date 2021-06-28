@@ -51,6 +51,7 @@ public:
     
     std::vector<Macrocell> macrocells;
     void generate_macrocells(double macrocell_size);
+    void save_macrocells(std::string filename);
     
 };
 

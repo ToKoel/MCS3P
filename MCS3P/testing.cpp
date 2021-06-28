@@ -139,7 +139,7 @@ void relaxation_test(double size, double sigma, int steps){
     double center = size/2.0+0.5;
     double temp = 0.01;
     Crystal crystal(struct_file, "None", -21.0,-8.6,-28.1,-106.28,3.2e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,sigma);
-    int numAtoms = crystal.atoms.size();
+    int numAtoms = (int)crystal.atoms.size();
    
     for(int l=0; l<20; l++){
         crystal.reset_structure();
@@ -174,8 +174,6 @@ void dipole_calcs(bool APB, int D_min, int D_max){
     } else{
         dipole_calcs.open(path+"dipole_calcs_noAPB_1.txt");
     }
-    double E_d_aligned = 0.0;
-    double E_d_domain = 0.0;
     
     dipole_calcs << "Diameter" << " " << "E_a_aligned" << " " << "E_a_domain" << " " << "E_e_aligned" << " " << "E_e_domain" << " " <<  "E_z_aligned" << " " << "E_z_domain" << " " << "E_d_aligned" << " " << "E_d_domain" <<  std::endl;
     

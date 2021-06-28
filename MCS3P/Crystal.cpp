@@ -177,17 +177,8 @@ void Crystal::structure_snapshot(std::string filename){
 }
 
 void Crystal::generate_macrocells(double macrocell_size){
-    double center_x=0.0,center_y=0.0, center_z=0.0;
-    for(int i=0; i<atoms.size(); i++){
-        center_x += atoms[i].x;
-        center_y += atoms[i].y;
-        center_z += atoms[i].z;
-    }
-    center_x /= atoms.size();
-    center_y /= atoms.size();
-    center_z /= atoms.size();
-    std::cout << center_x << " " << center_y << " " << center_z << std::endl;
     
+    // find minimum position
     double x_min=atoms[0].x, y_min=atoms[0].y, z_min=atoms[0].z;
     for(int i=0; i<atoms.size(); i++){
         if(atoms[i].x < x_min){
@@ -200,6 +191,7 @@ void Crystal::generate_macrocells(double macrocell_size){
             z_min = atoms[i].z;
         }
     }
+    // find maximum position
     double x_max=atoms[0].x, y_max=atoms[0].y, z_max=atoms[0].z;
     for(int i=0; i<atoms.size(); i++){
         if(atoms[i].x > x_max){
@@ -213,102 +205,55 @@ void Crystal::generate_macrocells(double macrocell_size){
         }
     }
     
-   
-    //double diameter = x_max-x_min;
-   // int num_macrocells = (int)ceil(diameter/macrocell_size);
-    
+    // determine number of macrocells needed
     int num_macrocells = 5;
     while(num_macrocells*macrocell_size <= x_max+0.2){
         num_macrocells++;
     }
     
-    double macrocell_side_length = macrocell_size;
-    
-    //double macrocell_side_length = diameter/((double)num_macrocells);
-    std::cout << std::pow((num_macrocells),3) << " macrocells will be generated" << std::endl;
-    std::cout << "Macrocell side length: "<< macrocell_side_length << std::endl;
-    
-    int n_mc = 0;
+    // initialize Macrocell instances
     for(int i=0; i<num_macrocells; i++){
         for(int j=0; j<num_macrocells; j++){
             for(int k=0; k<num_macrocells; k++){
-                Macrocell macrocell(macrocell_side_length/2.0+(double)i*macrocell_side_length,
-                                    macrocell_side_length/2.0+(double)j*macrocell_side_length,
-                                    macrocell_side_length/2.0+(double)k*macrocell_side_length);
+                Macrocell macrocell(macrocell_size/2.0+(double)i*macrocell_size,
+                                    macrocell_size/2.0+(double)j*macrocell_size,
+                                    macrocell_size/2.0+(double)k*macrocell_size);
                 macrocells.push_back(macrocell);
-                n_mc++;
             }
         }
     }
-    std::cout << n_mc << " macrocells initialized" << std::endl;
-    double w = macrocell_side_length/2.0;
-    std::ofstream macrocells_list;
-    macrocells_list.open("/Users/tobiaskohler/PhD/Monte_Carlo_Simulation/Spin_structure_simulations/D5_simulations/D5_macrocells.txt", std::fstream::out);
-    for(int i=0; i< macrocells.size(); i++){
-       // std::cout << macrocells[i].center_x-w << " " << macrocells[i].center_y-w << " " << macrocells[i].center_z-w << std::endl;
-        macrocells_list << macrocells[i].center_x << " " << macrocells[i].center_y << " " << macrocells[i].center_z << std::endl;
-    }
-    
- 
+
+    // assign atoms to macrocells
+    double w = macrocell_size/2.0;
     for(int j=0; j<atoms.size(); j++){
         for(int i=0; i<macrocells.size(); i++){
             if(atoms[j].x < macrocells[i].center_x+w and atoms[j].x >= macrocells[i].center_x-w
                and atoms[j].y < macrocells[i].center_y+w and atoms[j].y >= macrocells[i].center_y-w
                and atoms[j].z < macrocells[i].center_z+w and atoms[j].z >= macrocells[i].center_z-w){
                 macrocells[i].macrocell_atoms.push_back(&atoms[j]);
-                //atoms[j].macrocell_link = &macrocells[i];
             }
         }
     }
     
-    int num_filled = 0;
+    // flag and remove empty cells
     for(int i=0; i<macrocells.size(); i++){
         if(macrocells[i].macrocell_atoms.size()!=0){
             macrocells[i].isEmpty = false;
-            num_filled++;
-            for(int j=0; j<macrocells[i].macrocell_atoms.size(); j++){
-                macrocells[i].macrocell_atoms[j]->macrocell_link = &macrocells[i];
-            }
         } else {
             macrocells[i].isEmpty = true;
         }
     }
+    macrocells.erase(std::remove_if(macrocells.begin(),
+                                    macrocells.end(),
+                                    [](Macrocell i){ return i.isEmpty==true;}),
+                     macrocells.end());
     
-    std::cout << num_filled << " macrocells filled with atoms" << std::endl;
-    for(int i=0; i<atoms.size(); i++){
-        if(atoms[i].macrocell_link == NULL){
-            std::cout << "not assigned" << std::endl;
-        }
-    }
-    // remove empty cells
-    macrocells.erase(std::remove_if(macrocells.begin(), macrocells.end(),[](Macrocell i){ return i.isEmpty==true;}), macrocells.end());
-    
-    // update pointers
+    // Set pointers to macrocells for atoms
     for(int i=0; i<macrocells.size(); i++){
         for(int j=0; j<macrocells[i].macrocell_atoms.size(); j++){
             macrocells[i].macrocell_atoms[j]->macrocell_link = &macrocells[i];
         }
     }
-    
-//    int num_notEmpty = 0;
-//    int num_Empty = 0;
-//    for(int i=0; i<macrocells.size(); i++){
-//        if(macrocells[i].isEmpty == true){
-//            num_Empty++;
-//        } else {
-//            num_notEmpty++;
-//            if(macrocells[i].macrocell_atoms.size() < 2){
-//                std::cout << macrocells[i].macrocell_atoms[0] << std::endl;
-//            }
-//        }
-//    }
-//    std::cout << num_notEmpty << " " <<num_Empty << std::endl;
- 
-//    std::ofstream macrocells_list;
-//    macrocells_list.open("/Users/tobiaskohler/PhD/Monte_Carlo_Simulation/Spin_structure_simulations/D5_simulations/D5_macrocells.txt", std::fstream::out);
-//    for(int i=0; i< macrocells.size(); i++){
-//        macrocells_list << macrocells[i].center_x << " " << macrocells[i].center_y << " " << macrocells[i].center_z << std::endl;
-//    }
 
     // shift macrocell center to center of mass and calculate effective volume
     for(int i=0; i<macrocells.size(); i++){
@@ -329,21 +274,23 @@ void Crystal::generate_macrocells(double macrocell_size){
         macrocells[i].center_z /= n;
     }
     
-    // precalculate distances and distance vectors
+    // precalculate distances and distance vectors and initialize macrocell moment
     for(int i=0; i< macrocells.size(); i++){
         double x = macrocells[i].center_x;
         double y = macrocells[i].center_y;
         double z = macrocells[i].center_z;
+        double distance = 0.0;
+        double rx = 0.0, ry = 0.0, rz = 0.0;
         for(int j=0; j< macrocells.size(); j++){
             if(&macrocells[i] != &macrocells[j]){
-                double distance = std::sqrt((macrocells[j].center_x - x)*(macrocells[j].center_x - x)+
-                                               (macrocells[j].center_y - y)*(macrocells[j].center_y - y)+
-                                               (macrocells[j].center_z - z)*(macrocells[j].center_z - z));
+                distance = std::sqrt((macrocells[j].center_x - x)*(macrocells[j].center_x - x)+
+                                            (macrocells[j].center_y - y)*(macrocells[j].center_y - y)+
+                                            (macrocells[j].center_z - z)*(macrocells[j].center_z - z));
               
                 //unit vectors
-                double rx = (macrocells[j].center_x - x)/distance;
-                double ry = (macrocells[j].center_y - y)/distance;
-                double rz = (macrocells[j].center_z - z)/distance;
+                rx = (macrocells[j].center_x - x)/distance;
+                ry = (macrocells[j].center_y - y)/distance;
+                rz = (macrocells[j].center_z - z)/distance;
 
                 macrocells[i].inv_distances_cubed.push_back(1.0/(std::pow((distance*8.3965),3)));
                 macrocells[i].distVecX.push_back(rx);
@@ -362,23 +309,16 @@ void Crystal::generate_macrocells(double macrocell_size){
             macrocells[i].total_moment[2] += macrocells[i].macrocell_atoms[k]->spinz*MAGFE3;
         }
     }
-    
-    for(int i=0; i<macrocells.size(); i++){
-        for(int j=0; j<macrocells[i].inv_distances_cubed.size(); j++){
-        if(std::isnan(macrocells[i].inv_distances_cubed[j])){
-            std::cout << "nan" << std::endl;
-        }
-        }
-    }
-    
-    
-    
+}
+
+void Crystal::save_macrocells(std::string filename){
     std::ofstream macrocells_centers;
-    macrocells_centers.open("/Users/tobiaskohler/PhD/Monte_Carlo_Simulation/Spin_structure_simulations/D5_simulations/D5_macrocell_centers.txt", std::fstream::out);
+    macrocells_centers.open(filename, std::fstream::out);
     for(int i=0; i< macrocells.size(); i++){
-        macrocells_centers << macrocells[i].center_x << " " << macrocells[i].center_y << " " << macrocells[i].center_z << std::endl;
+        macrocells_centers << macrocells[i].center_x << " "
+                           << macrocells[i].center_y << " "
+                           << macrocells[i].center_z << std::endl;
     }
-    
 }
 
 void Crystal::reset_structure(){

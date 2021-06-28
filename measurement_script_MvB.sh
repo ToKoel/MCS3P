@@ -14,7 +14,7 @@ measurement="MvB"
 echo $measurement
 
 # directory for outputs
-output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/Hysteresis_sims/P43212_random_vacancies/D8/"
+output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/Hysteresis_sims/P43212_random_vacancies/D6/"
 
 
 #--------------------------
@@ -49,7 +49,7 @@ latticepars="8.3965,8.3965,8.3965"
 shape="Sphere"
 
 # particle size in unit cells
-particle_size=8
+particle_size=6
 
 # particle orientations per configuration used for averaging
 particle_orientations=20
@@ -80,7 +80,7 @@ field_step=0.1
 cooling_field=0.0
 starting_temperature=301.0
 temperature_step=1.0
-final_temperature=40.0
+final_temperature=5.0
 
 #--------------------------
 # Monte-Carlo settings
