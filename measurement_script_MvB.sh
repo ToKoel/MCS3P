@@ -14,7 +14,7 @@ measurement="MvB"
 echo $measurement
 
 # directory for outputs
-output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/Hysteresis_sims/P43212_random_vacancies/D8_APB/"
+output_dir="output_dir/"
 
 
 #--------------------------
@@ -30,9 +30,7 @@ num_particles=$(($outer_loop*$inner_loop))
 # cif-file for crystal structure (only Vesta cif supported)
 # if needed import the cif-file in Vesta and save it again under a different
 # name. This will generate the cif-file in the right format.
-
-#ciffile="/Users/tobiaskohler/Desktop/MCS3P/cif-files/Fd-3m_perfect.cif"
-ciffile="/Users/tobiaskohler/Desktop/MCS3P/cif-files/P4_32_12_perfect.cif"
+ciffile="./MCS3P/cif-files/P4_32_12_perfect.cif"
 
 # atom labels from cif-file used for occupancies (need to be comma separated)
 #atomlabels="Fe(oct),Fe(tet)"
@@ -104,22 +102,13 @@ macrocell_size=0.2
 # generate crystal structure files
 #----------------------------------
 # change path to "generate_nanoparticle.py" if necessary
-#
-#for (( c=1; c<=$num_particles; c++ ))
-#do
-#    if [ "$APB" = true ] ; then
- #       python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --occ_oct=0.88 --occ_tet=1.0 --diameter=$particle_size --number=$c --seed=$seed --APB
-#    else
-#        python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --occ_oct=0.88 --occ_tet=1.0 --diameter=$particle_size --number=$c --seed=$seed
-#    fi
-#done
 
 for (( c=1; c<=$num_particles; c++ ))
 do
     if [ "$APB" = true ] ; then
-        python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --APB
+        python ./MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --APB
     else
-        python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars
+        python ./MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars
     fi
 done
 
@@ -130,9 +119,9 @@ done
 # change path to "generate_json_files.py" if necessary
 #
 if [ "$APB" == true ] ; then
-    python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --num_or=$particle_orientations --Bupper=$upper_field_limit --Blower=$lower_field_limit --Bstep=$field_step --start_temperature=$starting_temperature --cooling_steps=$cooling_steps --temperature=$final_temperature --T_step=$temperature_step --cool_field=$cooling_field --anisotropy_constant=$anisotropy_constant --APB --sigma=$sigma --latticepar=$latticepars --exchangeconstants=$exchange_constants --APB_constant=$APB_constant
+    python ./MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --num_or=$particle_orientations --Bupper=$upper_field_limit --Blower=$lower_field_limit --Bstep=$field_step --start_temperature=$starting_temperature --cooling_steps=$cooling_steps --temperature=$final_temperature --T_step=$temperature_step --cool_field=$cooling_field --anisotropy_constant=$anisotropy_constant --APB --sigma=$sigma --latticepar=$latticepars --exchangeconstants=$exchange_constants --APB_constant=$APB_constant
 else
-    python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --num_or=$particle_orientations --Bupper=$upper_field_limit --Blower=$lower_field_limit --Bstep=$field_step --start_temperature=$starting_temperature --cooling_steps=$cooling_steps --temperature=$final_temperature --T_step=$temperature_step --cool_field=$cooling_field --anisotropy_constant=$anisotropy_constant --sigma=$sigma --latticepar=$latticepars --exchangeconstants=$exchange_constants
+    python ./MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --num_or=$particle_orientations --Bupper=$upper_field_limit --Blower=$lower_field_limit --Bstep=$field_step --start_temperature=$starting_temperature --cooling_steps=$cooling_steps --temperature=$final_temperature --T_step=$temperature_step --cool_field=$cooling_field --anisotropy_constant=$anisotropy_constant --sigma=$sigma --latticepar=$latticepars --exchangeconstants=$exchange_constants
 fi
 
 #--------------------------
@@ -147,9 +136,9 @@ for (( i=1; i<=$outer_loop; i++ )); do
     for ((c=1; c<=$inner_loop; c++ )); do
         ((count=count+1))
         if [ "$APB" == true ] ; then
-            /Users/tobiaskohler/Library/Developer/Xcode/DerivedData/MCS3P-fdtoextkqpexyiceuusyyotrcfyb/Build/Products/Release/MCS3P ${output_dir}/${count}_MvsB_simulation_APB_D${particle_size}.json &
+            build_dir/MCS3P ${output_dir}/${count}_MvsB_simulation_APB_D${particle_size}.json &
         else
-            /Users/tobiaskohler/Library/Developer/Xcode/DerivedData/MCS3P-fdtoextkqpexyiceuusyyotrcfyb/Build/Products/Release/MCS3P ${output_dir}/${count}_MvsB_simulation_noAPB_D${particle_size}.json &
+            build_dir/MCS3P ${output_dir}/${count}_MvsB_simulation_noAPB_D${particle_size}.json &
         fi
     done
     wait
