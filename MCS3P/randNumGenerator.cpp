@@ -1,5 +1,10 @@
 #include "randNumGenerator.hpp"
 
+/*
+Random numbder generator was developed by Ralf Meyer and Fred Hucht (Copyright 1995 Ralf Meyer, 47058 Duisburg, Germany),
+but was slightly adapted for the use in this program. 
+*/
+
 long rnd250(){
     Rnd250.point = (Rnd250.point+1)&255;
     Rnd250.field[Rnd250.point] = Rnd250.field[(Rnd250.point-250)&255]^Rnd250.field[(Rnd250.point-103)&255];
