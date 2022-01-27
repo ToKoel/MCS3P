@@ -17,7 +17,7 @@ measurement="spin_structure"
 echo $measurement
 
 # directory for outputs
-output_dir="/Users/tobiaskohler/Desktop/demo_spin_structure/"
+output_dir="/Users/spin_structure/"
 
 
 #--------------------------
@@ -33,9 +33,7 @@ num_particles=$(($outer_loop*$inner_loop))
 # cif-file for crystal structure (only Vesta cif supported)
 # if needed import the cif-file in Vesta and save it again under a different
 # name. This will generate the cif-file in the right format.
-
-#ciffile="/Users/tobiaskohler/Desktop/MCS3P/cif-files/Fd-3m_perfect.cif"
-ciffile="/Users/tobiaskohler/Desktop/MCS3P/cif-files/P4_32_12_perfect.cif"
+ciffile="/cif_dir/P4_32_12_perfect.cif"
 
 # atom labels from cif-file used for occupancies (need to be comma separated)
 #atomlabels="Fe(oct),Fe(tet)"
@@ -111,25 +109,18 @@ macrocell_size=0.2
 # change path to "generate_nanoparticle.py" if necessary
 #
 if [ "$APB" = true ] ; then
-    #python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --occ_oct=1.0 --occ_tet=1.0 --diameter=$particle_size --seed=$seed --APB --template
-    
-    python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --APB --template
+    python ./MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --APB --template
 else
-    #python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --occ_oct=1.0 --occ_tet=1.0 --diameter=$particle_size --seed=$seed --template
-    
-    python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --template
+    python ./MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --template
 fi
 
 
 for (( c=1; c<=$num_particles; c++ )) 
 do
     if [ "$APB" = true ] ; then
-        #python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --occ_oct=0.88 --occ_tet=1.0 --diameter=$particle_size --number=$c --seed=$seed --APB
-        
-        python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --APB
+        python ./MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars --APB
     else
-        #python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --occ_oct=0.88 --occ_tet=1.0 --diameter=$particle_size --number=$c --seed=$seed
-        python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars
+        python ./MCS3P/generate_nanoparticle.py --output=$output_dir --atomlabels=$atomlabels --occupancies=$occupancies --diameter=$particle_size --number=$c --seed=$seed --ciffile=$ciffile --shape=$shape --latticepar=$latticepars
     fi
 done
 
@@ -140,9 +131,9 @@ done
 # change path to "generate_json_files.py" if necessary
 #
 if [ "$APB" == true ] ; then
-    python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --alpha=$alpha --beta=$beta --gamma=$gamma --meas_field=$measurement_field --temperature=$temperature --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --sigma=$sigma --latticepar=$latticepars --APB --anisotropy_constant=$anisotropy_constant --exchangeconstants=$exchange_constants --APB_constant=$APB_constant
+    python ./MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --alpha=$alpha --beta=$beta --gamma=$gamma --meas_field=$measurement_field --temperature=$temperature --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --sigma=$sigma --latticepar=$latticepars --APB --anisotropy_constant=$anisotropy_constant --exchangeconstants=$exchange_constants --APB_constant=$APB_constant
 else
-    python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --alpha=$alpha --beta=$beta --gamma=$gamma --meas_field=$measurement_field --temperature=$temperature --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --sigma=$sigma --latticepar=$latticepars --anisotropy_constant=$anisotropy_constant --exchangeconstants=$exchange_constants
+    python ./MCS3P/generate_json_files.py --measurement=$measurement --output=$output_dir --structure_path=$output_dir --num_particles=$num_particles --particle_size=$particle_size --alpha=$alpha --beta=$beta --gamma=$gamma --meas_field=$measurement_field --temperature=$temperature --steps=$steps --dipole=$dipole_interactions --macrocell_size=$macrocell_size --sigma=$sigma --latticepar=$latticepars --anisotropy_constant=$anisotropy_constant --exchangeconstants=$exchange_constants
 fi
 
 #--------------------------
@@ -153,9 +144,9 @@ fi
 trap "kill 0" EXIT
 
 if [ "$APB" == true ] ; then
-    /Users/tobiaskohler/Library/Developer/Xcode/DerivedData/MCS3P-fdtoextkqpexyiceuusyyotrcfyb/Build/Products/Release/MCS3P ${output_dir}/spin_structure_APB_D${particle_size}_template.json 
+    build_dir/MCS3P ${output_dir}/spin_structure_APB_D${particle_size}_template.json 
 else
-    /Users/tobiaskohler/Library/Developer/Xcode/DerivedData/MCS3P-fdtoextkqpexyiceuusyyotrcfyb/Build/Products/Release/MCS3P ${output_dir}/spin_structure_noAPB_D${particle_size}_template.json 
+    build_dir/MCS3P ${output_dir}/spin_structure_noAPB_D${particle_size}_template.json 
 fi
 
 count=0
@@ -163,9 +154,9 @@ for (( i=1; i<=$outer_loop; i++ )); do
     for ((c=1; c<=$inner_loop; c++ )); do
         ((count=count+1))
         if [ "$APB" == true ] ; then
-            /Users/tobiaskohler/Library/Developer/Xcode/DerivedData/MCS3P-fdtoextkqpexyiceuusyyotrcfyb/Build/Products/Release/MCS3P ${output_dir}/${count}_spin_structure_APB_D${particle_size}.json &
+            build_dir/MCS3P ${output_dir}/${count}_spin_structure_APB_D${particle_size}.json &
         else
-            /Users/tobiaskohler/Library/Developer/Xcode/DerivedData/MCS3P-fdtoextkqpexyiceuusyyotrcfyb/Build/Products/Release/MCS3P ${output_dir}/${count}_spin_structure_noAPB_D${particle_size}.json &
+            build_dir/MCS3P ${output_dir}/${count}_spin_structure_noAPB_D${particle_size}.json &
         fi
     done
     wait
@@ -188,7 +179,7 @@ fi
 
 echo $template_filename
 
-python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/average_spin_structure.py --input_dir=$output_dir --template_file=$template_filename --particle_size=$particle_size --num_particles=$num_particles --dipole=$dipole_interactions
+python ./MCS3P/average_spin_structure.py --input_dir=$output_dir --template_file=$template_filename --particle_size=$particle_size --num_particles=$num_particles --dipole=$dipole_interactions
 
 if [ "$APB" == true ] ; then
     averaged_file=D${particle_size}_structure_APB_averaged_spin_structure_${t}K_${steps}MCS_${mf}T_dip${dipole_interactions}.txt
@@ -199,19 +190,19 @@ fi
 #---------------------------------
 # Generate polar plot
 #---------------------------------
-python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/polar_plot.py --input_dir=$output_dir --template_file=$template_filename --averaged_file=$averaged_file --particle_size=$particle_size --num_particles=$num_particles --dipole=$dipole_interactions
+python ./MCS3P/polar_plot.py --input_dir=$output_dir --template_file=$template_filename --averaged_file=$averaged_file --particle_size=$particle_size --num_particles=$num_particles --dipole=$dipole_interactions
 
 #---------------------------------
 # Generate 3D image with Mayavi
 #---------------------------------
 # Mayavi has to be installed 
-# use: pip install mayavi
-# and: pip install PyQt5
 # a conda environment with python version 3.7 is required
 # create the environment with: conda create --name py37 python=3.7
+# use: pip install mayavi
+# and: pip install PyQt5
 
 source activate py37
-python /Users/tobiaskohler/Desktop/MCS3P/MCS3P/3dplot_MC_Mayavi.py --input_dir=$output_dir --file=$averaged_file
+python ./MCS3P/3dplot_MC_Mayavi.py --input_dir=$output_dir --file=$averaged_file
 conda deactivate
 
 
