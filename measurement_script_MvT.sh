@@ -17,7 +17,7 @@ measurement="MvT"
 echo $measurement
 
 # directory for outputs
-output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/MvT_different_fields/"
+output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/ZFC_FC_sims/D6/"
 
 
 #--------------------------
@@ -81,7 +81,7 @@ temperature_step=0.5
 # Measurement settings
 #--------------------------
 # number of complete Monte Carlo steps = steps x totalNumAtoms
-relaxation_steps=50000.0
+relaxation_steps=500.0
 averaging_steps=0
 
 # sigma parameter for opening of gaussian cone in trial move

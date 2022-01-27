@@ -13,6 +13,7 @@
 		FA6C69E226342791008BB914 /* Crystal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E026342790008BB914 /* Crystal.cpp */; };
 		FA6C69E82634279A008BB914 /* randNumGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E52634279A008BB914 /* randNumGenerator.cpp */; };
 		FA6C69E92634279A008BB914 /* Measurement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E62634279A008BB914 /* Measurement.cpp */; };
+		FA79369F26890BE20087D45D /* testing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA79369D26890BE10087D45D /* testing.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +44,8 @@
 		FA6C69E62634279A008BB914 /* Measurement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Measurement.cpp; sourceTree = "<group>"; };
 		FA6C69E72634279A008BB914 /* Measurement.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Measurement.hpp; sourceTree = "<group>"; };
 		FA79365D264D240F0087D45D /* ProgressBar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProgressBar.hpp; sourceTree = "<group>"; };
+		FA79369D26890BE10087D45D /* testing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = testing.cpp; sourceTree = "<group>"; };
+		FA79369E26890BE20087D45D /* testing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = testing.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +93,8 @@
 				FA6C69DD26342790008BB914 /* constants.h */,
 				FA6C69E126342790008BB914 /* JSON.h */,
 				FA79365D264D240F0087D45D /* ProgressBar.hpp */,
+				FA79369D26890BE10087D45D /* testing.cpp */,
+				FA79369E26890BE20087D45D /* testing.hpp */,
 			);
 			path = MCS3P;
 			sourceTree = "<group>";
@@ -160,6 +165,7 @@
 			files = (
 				FA6C69DB26342787008BB914 /* Atom.cpp in Sources */,
 				FA6C69E82634279A008BB914 /* randNumGenerator.cpp in Sources */,
+				FA79369F26890BE20087D45D /* testing.cpp in Sources */,
 				FA6C69E92634279A008BB914 /* Measurement.cpp in Sources */,
 				FA6C69E226342791008BB914 /* Crystal.cpp in Sources */,
 				FA6C69CE2634258F008BB914 /* main.cpp in Sources */,

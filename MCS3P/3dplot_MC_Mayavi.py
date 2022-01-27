@@ -167,6 +167,17 @@ fig.scene.anti_aliasing_frames = 20
 mlab.draw()
 fig.scene.camera.zoom(1.2)
 
+
+
+#fig.scene.camera.position = [25.9708473150495, 5.768876388951644, 5.984045576305887]
+#fig.scene.camera.focal_point = [5.970896914601326, 5.727289866656065, 5.999999910593033]
+#fig.scene.camera.view_angle = 30.0
+#fig.scene.camera.view_up = [0.0007722997493031671, 0.012195929042985993, 0.9999253286460325]
+#fig.scene.camera.clipping_range = [8.654918546946988, 34.329361326582166]
+#fig.scene.camera.compute_view_plane_normal()
+#fig.scene.render()
+
 mlab.savefig(file_r+".png", size=(2000,2000))
+#mlab.savefig("D11_new_orientation.png", size=(2000,2000))
 mlab.show()
 
