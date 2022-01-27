@@ -17,22 +17,17 @@ measurement="spin_structure"
 echo $measurement
 
 # directory for outputs
-#output_dir="/Users/tobiaskohler/PhD/APB-Paper/Monte-Carlo_Simulation/New_simulations_different_sizes/D11/D11_brute_dip/10T_noAPB/"
-#output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D8_sphere/APB_5T_Fd3m/"
+output_dir="/Users/tobiaskohler/Desktop/demo_spin_structure/"
 
-#output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_P43212_0d33Fe2/"
-output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/APB_5T/"
-#output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_P43212_0d83Fe2Fe3Fe4/"
-#output_dir="/Users/tobiaskohler/PhD/thesis/Simulations/spin_structure_sims_for_thesis/D11_sphere/Vacancy_ordering/noAPB_5T_Fd3m_0d89Feoct/"
 
 #--------------------------
 # particle settings
 #--------------------------
-outer_loop=20
+outer_loop=2
 # inner loop determines how many processes are started in parallel
 # do not use too many for larger particles --> the system might crash!
 inner_loop=1
-# total number of particles to be calculated
+# total number of particles to be calculated: inner_loop * outer_loop
 num_particles=$(($outer_loop*$inner_loop))
 
 # cif-file for crystal structure (only Vesta cif supported)
@@ -57,7 +52,7 @@ latticepars="8.3965,8.3965,8.3965"
 shape="Sphere"
 
 # particle size in unit cells
-particle_size=11
+particle_size=8
 
 # particle orientation angles
 alpha=0.0
@@ -70,8 +65,9 @@ APB=true
 # effective anisotropy constant: K[kJ/m^3] / N_atoms/particle_volume
 anisotropy_constant=3.25e-25
 
-# exchange constants: Fe_TT, Fe_TO, Fe_OO in K
+# exchange constants: Fe_TT, Fe_OO, Fe_TO in K
 exchange_constants="-21.0,-8.6,-28.1"
+#exchange_constants="0.0,-8.6,-28.1"
 #exchange_constants="-42.0,-17.2,-56.2"
 # exchange contant accross APB in K
 APB_constant=-106.28

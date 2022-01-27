@@ -294,6 +294,10 @@ void Atom::MonteCarloStep(double Bx, double temperature){
             E1 = Ez + Ea + Ee;
             
             if(E1 > E0){
+                // if the energy difference is ppositive the spin state
+                // is resetted if the random number is larger than the
+                // Boltzmann factor. For low temperatures this is almost
+                // always the case.
                 if(rand0_1() > std::exp((E0-E1)/(KB*temperature))){
                     spinx = tempSpinVector[0];
                     spiny = tempSpinVector[1];

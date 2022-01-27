@@ -122,24 +122,34 @@ int main(int argc, char* argv[]) {
                      jf["sigma"]);
         }
     } else{
-        //dipole_calcs(false, 3, 4);
-    
-        
-//        dipole_calcs(true);
+        dipole_calcs(false, 3, 11);
+        dipole_calcs(true, 3, 11);
         
         
-//        relaxation_test(6, 0.03, 5000);
-//        relaxation_test(6, 0.1, 5000);
-//        relaxation_test(6, 0.3, 5000);
-//        
-//        relaxation_test(8, 0.03, 5000);
-//        relaxation_test(8, 0.1, 5000);
-//        relaxation_test(8, 0.3, 5000);
-        
-//        relaxation_test(11, 0.03, 5000);
-//        relaxation_test(11, 0.1, 5000);
-//        relaxation_test(11, 0.3, 5000);
-        
+//        relaxation_test(6, 0.03, 8000, false);
+//        relaxation_test(6, 0.1, 8000, false);
+//        relaxation_test(6, 0.3, 8000, false);
+//
+//        relaxation_test(8, 0.03, 8000, false);
+//        relaxation_test(8, 0.1, 8000, false);
+//        relaxation_test(8, 0.3, 8000, false);
+//
+//        relaxation_test(11, 0.03, 8000, false);
+//        relaxation_test(11, 0.1, 8000, false);
+//        relaxation_test(11, 0.3, 8000, false);
+//
+//        relaxation_test(6, 0.03, 8000, true);
+//        relaxation_test(6, 0.1, 8000, true);
+//        relaxation_test(6, 0.3, 8000, true);
+//
+//        relaxation_test(8, 0.03, 8000, true);
+//        relaxation_test(8, 0.1, 8000, true);
+//        relaxation_test(8, 0.3, 8000, true);
+//
+//        relaxation_test(11, 0.03, 8000, true);
+//        relaxation_test(11, 0.1, 8000, true);
+//        relaxation_test(11, 0.3, 8000, true);
+//
        // sigma_tests(0.4);
     }
 

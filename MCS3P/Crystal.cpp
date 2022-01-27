@@ -169,11 +169,12 @@ int Crystal::outputStats(){
 }
 
 void Crystal::structure_snapshot(std::string filename){
-       std::ofstream structure;
-       structure.open(filename, std::fstream::out);
-       for(int i=0; i< atoms.size(); i++){
-           structure << atoms[i].x << ", " << atoms[i].y << ", " << atoms[i].z <<", "<< atoms[i].spinx << ", " << atoms[i].spiny << ", " << atoms[i].spinz  << ", " << atoms[i].position << ", " << atoms[i].isApbAtom << "\n";
-       }
+    std::ofstream structure;
+    structure.open(filename, std::fstream::out);
+    for(int i=0; i< atoms.size(); i++){
+        structure << atoms[i].x << ", " << atoms[i].y << ", " << atoms[i].z <<", "<< atoms[i].spinx << ", " << atoms[i].spiny << ", " << atoms[i].spinz  << ", " << atoms[i].position << ", " << atoms[i].isApbAtom << "\n";
+    }
+    structure.close();
 }
 
 void Crystal::generate_macrocells(double macrocell_size){
@@ -319,6 +320,7 @@ void Crystal::save_macrocells(std::string filename){
                            << macrocells[i].center_y << " "
                            << macrocells[i].center_z << std::endl;
     }
+    macrocells_centers.close();
 }
 
 void Crystal::reset_structure(){

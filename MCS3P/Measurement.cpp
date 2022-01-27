@@ -28,9 +28,6 @@ std::string num_to_string(double number, int precision){
     return double_string;
 }
 
-
-
-
 MvsTMeasurement::MvsTMeasurement(std::string dipoleInteractions,
                                  double steps,
                                  int averaging_steps,
@@ -403,6 +400,7 @@ void MvsBMeasurement::fieldSweep(std::string output_dir,
         bSweep << "# FeOO: " << FeOO << std::endl;
         bSweep << "# FeOO_APB: " << FeOO_APB << std::endl;
         bSweep << "# lattice parameters: " << lattice_a << ", " << lattice_b << ", " << lattice_c << std::endl;
+        bSweep << "# total number of iron atoms: " << totalNumAtoms << std::endl;
         bSweep << "# " << std::endl;
         bSweep << "# field (T)      M_x(B)      M_y(B)      M_z(B)" << std::endl;
         for(int currentStep = 0; currentStep <= BnumberOfSteps; currentStep++){
@@ -474,12 +472,35 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
 
     int totalNumAtoms = int(crystal.atoms.size());
     
+    ProgressBar bar2;
+    bar2.set_bar_width(50);
+    bar2.fill_bar_progress_with("■");
+    bar2.fill_bar_remainder_with(" ");
+    bar2.update(0);
+    
+    //simulated annealing
+    /*
+    std::cout<< "cooling" << std::endl;
+    bar2.set_status_text("starting cooling");
+    double start_T = 300.0;
+    while(start_T > temperature){
+        for(int i=0; i<steps*totalNumAtoms; i++){
+            crystal.atoms[rand0_crystalAtoms(totalNumAtoms)].MonteCarloStep(magneticField, start_T);
+        }
+        start_T -= 10.0;
+        std::cout << start_T << std::endl;
+        bar2.set_status_text("temperature: " + std::to_string((int)start_T));
+    }
+    bar2.set_status_text("cooling finished");
+    */
+    
     ProgressBar bar;
     bar.set_bar_width(50);
     bar.fill_bar_progress_with("■");
     bar.fill_bar_remainder_with(" ");
     bar.update(0);
-
+    
+    // measurement
     {
         for(int i =0; i < steps*totalNumAtoms; i++){
             crystal.atoms[rand0_crystalAtoms(totalNumAtoms)].MonteCarloStep(magneticField, temperature);
@@ -494,7 +515,7 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
         output_filename += structure_filename.substr(structure_filename.find_last_of("/")+1);
         output_filename += "_spin_structure_"+std::to_string((int)(temperature));
         output_filename += "K_"+std::to_string((int)(steps))+"MCS";
-        output_filename += "_"+num_to_string(magneticField, 2)+"T";
+        output_filename += "_"+ std::to_string((int)magneticField) +"T";
         output_filename += "_dip"+dipoleInteractions;
         if(dipoleInteractions == "macrocell_method"){
             output_filename += "_0d" + std::to_string((int)(macrocell_size*100)) + "mcsize";

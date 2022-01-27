@@ -13,7 +13,8 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
     std::string struct_file = infile;
 
     std::string spin_file = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/spins_" + numf + ".txt";
-    Crystal crystal(struct_file, "brute_force", -21.0,-8.6,-28.1,-106.28,3.2e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
+   // Crystal crystal(struct_file, "brute_force", -21.0,-8.6,-28.1,-106.28,3.25e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
+    Crystal crystal(struct_file, "brute_force", 0.0,-8.6,-28.1,-106.28,3.25e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
     
     // output file
     std::string fname = outfile;
@@ -126,9 +127,17 @@ void calc_dipole_field(){
     }
 }
 
-void relaxation_test(double size, double sigma, int steps){
+void relaxation_test(double size, double sigma, int steps, bool APB){
     std::string path = "/Users/tobiaskohler/PhD/thesis/Simulations/tests/structures/";
-    std::string struct_file = path + "D" + std::to_string((int)size) + "_structure_noAPB";
+    std::string struct_file = path + "D" + std::to_string((int)size) + "_structure_";
+    std::string A = " ";
+    if(APB){
+        struct_file += "APB";
+        A = "_APB";
+    } else{
+        struct_file += "noAPB";
+        A = "_noAPB";
+    }
     std::string output_path = "/Users/tobiaskohler/PhD/thesis/Simulations/tests/relaxation_steps/";
     
     std::string sigma_str = std::to_string((int)(sigma)) + "d";
@@ -144,7 +153,7 @@ void relaxation_test(double size, double sigma, int steps){
     for(int l=0; l<20; l++){
         crystal.reset_structure();
     std::ofstream relaxation;
-    std::string output_file = output_path+ "relaxation_D" + std::to_string((int)size) + "_" + std::to_string(steps)+ "steps_" + sigma_str + "_" +std::to_string(l) + ".txt";
+    std::string output_file = output_path+ "relaxation_D" + std::to_string((int)size) + "_" + std::to_string(steps)+ "steps_" + sigma_str + "_" +std::to_string(l) + A + ".txt";
     relaxation.open(output_file, std::fstream::out);
     
     relaxation << "# MCS       Total trial moves      Sx comp.     Sy comp.    Sz comp." << std::endl;
@@ -168,11 +177,12 @@ void relaxation_test(double size, double sigma, int steps){
 
 void dipole_calcs(bool APB, int D_min, int D_max){
     std::ofstream dipole_calcs;
-    std::string path = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/dipole_energy_calculations/";
+    std::string path = "/Users/tobiaskohler/PhD/thesis/Simulations/Energy_calculations/structures/";
+    std::string path_out = "/Users/tobiaskohler/PhD/thesis/Simulations/Energy_calculations/calculations_wrong/";
     if(APB){
-        dipole_calcs.open(path+"dipole_calcs_APB_1.txt");
+        dipole_calcs.open(path_out+"dipole_calcs_APB_1.txt");
     } else{
-        dipole_calcs.open(path+"dipole_calcs_noAPB_1.txt");
+        dipole_calcs.open(path_out+"dipole_calcs_noAPB_1.txt");
     }
     
     dipole_calcs << "Diameter" << " " << "E_a_aligned" << " " << "E_a_domain" << " " << "E_e_aligned" << " " << "E_e_domain" << " " <<  "E_z_aligned" << " " << "E_z_domain" << " " << "E_d_aligned" << " " << "E_d_domain" <<  std::endl;
@@ -190,10 +200,10 @@ void dipole_calcs(bool APB, int D_min, int D_max){
         std::string out_domain = f + "_domain.txt";
         retVals retVals_aligned = particle_configurations_test("aligned",
                                  path+f,
-                                 path+out_aligned, c);
+                                 path_out+out_aligned, c);
         retVals retVals_domain = particle_configurations_test("domain",
                                  path+f,
-                                 path+out_domain, c);
+                                 path_out+out_domain, c);
         
         dipole_calcs << j << " " << retVals_aligned.E_a << " " << retVals_domain.E_a << " " << retVals_aligned.E_e << " " << retVals_domain.E_e << " " <<  retVals_aligned.E_z << " " << retVals_domain.E_z << " " << retVals_aligned.E_d << " " << retVals_domain.E_d << std::endl;
         }
