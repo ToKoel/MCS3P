@@ -122,11 +122,11 @@ int main(int argc, char* argv[]) {
                      jf["sigma"]);
         }
     } else{
-        dipole_calcs(false, 3, 11);
-        dipole_calcs(true, 3, 11);
+//        dipole_calcs(false, 3, 11);
+//        dipole_calcs(true, 3, 11);
         
         
-//        relaxation_test(6, 0.03, 8000, false);
+         relaxation_test(6, 0.03, 8000, false, "/Users/tobiaskohler/Desktop/Relaxation_Test_new/");
 //        relaxation_test(6, 0.1, 8000, false);
 //        relaxation_test(6, 0.3, 8000, false);
 //

@@ -66,7 +66,7 @@ double gaussian_marsaglia(double stdDev){
         }
 }
 
-void marsaglia(double* V){
+void marsaglia(LinalgVector& V){
     double rsq, y1, y2;
     
     do{
@@ -75,9 +75,7 @@ void marsaglia(double* V){
         rsq = y1 * y1 + y2 * y2;
     } while (rsq > 1.0);
     
-    V[0] = 2.0 * y1 * std::sqrt((1.0 - rsq));
-    V[1] = 2.0 * y2 * std::sqrt((1.0 - rsq));
-    V[2] = 1.0 - 2.0 * rsq;
+    V = {2.0 * y1 * std::sqrt((1.0 - rsq)), 2.0 * y2 * std::sqrt((1.0 - rsq)), 1.0 - 2.0 * rsq};
 }
 
 int rand0_crystalSize(int dimension){
@@ -98,12 +96,15 @@ double rand0_90(){
     return(rnd250() % 91);
 }
 
-void rand0_360(double *angles){
-    double V[3];
+constexpr double angleConversionFactor = 180.0/M_PI;
+
+void rand0_360(LinalgVector& angles){
+    LinalgVector V;
     marsaglia(V);
-    angles[0] = std::acos(V[0])*180.0/M_PI;
-    angles[1] = std::acos(V[1])*180.0/M_PI;
-    angles[2] = std::acos(V[2])*180.0/M_PI;
+    angles = {std::acos(V.x),
+              std::acos(V.y),
+              std::acos(V.z)};
+    angles *= angleConversionFactor;
 }
 
 

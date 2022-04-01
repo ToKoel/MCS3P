@@ -9,95 +9,61 @@
 #include "Crystal.hpp"
 
 
-Crystal::Crystal(std::string filename, std::string dipole_interactions,
-                 double FeTT, double FeOO, double FeTO, double FeOO_APB,
-                 double anisotropyConstant, double alpha, double beta,
-                 double gamma, double macrocell_size, double center,
-                 double lattice_a, double lattice_b, double lattice_c, double sigma):
-                 lattice_a(lattice_a), lattice_b(lattice_b), lattice_c(lattice_c), center(center){
-    
-    read_structure_from_file(filename, dipole_interactions,
-                             FeTT,  FeOO,  FeTO,  FeOO_APB,
-                             anisotropyConstant);
-    set_sigma(sigma);
-    rotateCrystal(alpha, beta, gamma, center);
-    generate_neighbour_lists();
+Crystal::Crystal(std::string filename, DipoleInteractions dipoleInteractions,
+                 ExchangeConstants exchangeConstants,
+                 double anisotropyConstant,
+                 LinalgVector angles,
+                 double macrocell_size, double center,
+                 LatticeParameters lattice_pars, double sigma):
+                 lattice_pars(lattice_pars), center(center){
+                     
+                     
+                     initializeStructureFromFile(filename, dipoleInteractions, exchangeConstants, anisotropyConstant);
+                     setSigma(sigma);
+                     rotateCrystal(angles, center);
+                     generateNeighbourLists();
 
-    if(dipole_interactions == "brute_force"){
-        generate_dipole_lists();
-    } else if(dipole_interactions == "macrocell_method"){
-        generate_macrocells(macrocell_size);
-    }
+                     switch(dipoleInteractions){
+                         case DipoleInteractions::kBruteForce:
+                             generateDipoleLists();
+                             break;
+                         case DipoleInteractions::kMacrocellMethod:
+                             generateMacrocells(macrocell_size);
+                             break;
+                         case DipoleInteractions::kNoInteractions:
+                             break;
+                     }
 }
 
-void Crystal::read_structure_from_file(std::string filename,
-                                       std::string dipole_interactions,
-                                       double FeTT, double FeOO, double FeTO, double FeOO_APB,
+void Crystal::initializeStructureFromFile(std::string filename,
+                                       DipoleInteractions dipoleInteractions,
+                                       ExchangeConstants exchange_constants,
                                        double anisotropyConstant){
-
-    std::vector<double> x;
-    std::vector<double> y;
-    std::vector<double> z;
-    std::vector<int> pos;
-    std::vector<int> apb;
+    StructureFileParser parser(filename);
+    StructureProperties structureProperties = parser.parseStructureFile();
     
-    std::ifstream inFile;
-    inFile.open(filename);
-    std::string line;
-    int num = 0;
-    while (std::getline(inFile, line)){
-            ++num;
-    }
-    inFile.close();
-    
-    x.resize(num); y.resize(num); z.resize(num);
-    pos.resize(num); apb.resize(num);
-    
-    inFile.open(filename);
-    for(int i =0; i<num; i++){
-        double xr,yr,zr;
-        double posr,apbr,uc_xr,uc_yr,uc_zr;
-        inFile >> xr >> yr >> zr >> posr >> apbr >> uc_xr >> uc_yr >> uc_zr ;
-        x[i] = xr;
-        y[i] = yr;
-        z[i] = zr;
-        pos[i] = posr;
-        apb[i] = apbr;
-    }
-    inFile.close();
-    
-    int dip;
-    if(dipole_interactions == "brute_force"){
-        dip = 0;
-    } else if(dipole_interactions == "macrocell_method"){
-        dip = 1;
-    } else {
-        dip = 2;
-    }
-    
-    for(int i=0; i<num; i++){
-        atoms.push_back(Atom(dip,
-                             x[i], y[i], z[i],
-                             pos[i], apb[i],
-                             FeTT,  FeOO,  FeTO, FeOO_APB,
+    for(int i=0; i<structureProperties.numberOfAtoms; i++){
+        atoms.push_back(Atom(dipoleInteractions,
+                             structureProperties.positionVectors[i],
+                             structureProperties.positionIDs[i],
+                             structureProperties.isAPB[i],
+                             exchange_constants,
                              anisotropyConstant));
     }
 }
 
-void Crystal::generate_neighbour_lists(){
-    double xx, yy, zz;
+void Crystal::generateNeighbourLists(){
+    LinalgVector difference;
     
     for(int i=0; i<atoms.size(); i++){
         atoms[i].neighboursAntiparallel.reserve(12);
         atoms[i].neighboursParallel.reserve(12);
         
         for(int j=0; j<atoms.size(); j++){
-            xx = atoms[j].x - atoms[i].x;
-            yy = atoms[j].y - atoms[i].y;
-            zz = atoms[j].z - atoms[i].z;
+            difference = atoms[j].positionVector - atoms[i].positionVector;
     
-            if((i!=j) and ((xx*xx + yy*yy + zz*zz) < 0.2505)){
-                if(atoms[i].position == atoms[j].position){
+            if((i!=j) and (difference.selfDot() < 0.2505)){
+                if(atoms[i].structuralPositionID == atoms[j].structuralPositionID){
                     atoms[i].neighboursParallel.push_back(&atoms[j]);
                 }
                 else{
@@ -108,36 +74,35 @@ void Crystal::generate_neighbour_lists(){
     }
 }
 
-void Crystal::generate_dipole_lists(){
+void Crystal::generateDipoleLists(){
     double x, y, z;
     double a_sq, b_sq, c_sq;
     double distance;
     double rx, ry, rz;
     
-    a_sq = lattice_a*lattice_a;
-    b_sq = lattice_b*lattice_b;
-    c_sq = lattice_c*lattice_c;
+    a_sq = lattice_pars.a*lattice_pars.a;
+    b_sq = lattice_pars.b*lattice_pars.b;
+    c_sq = lattice_pars.c*lattice_pars.c;
     
     for(unsigned int i=0; i< atoms.size(); i++){
-        x = atoms[i].x;
-        y = atoms[i].y;
-        z = atoms[i].z;
+        x = atoms[i].positionVector.x;
+        y = atoms[i].positionVector.y;
+        z = atoms[i].positionVector.z;
         for(unsigned int j=0; j< atoms.size(); j++){
             if(&atoms[i] != &atoms[j]){
-                distance = std::sqrt((atoms[j].x - x)*(atoms[j].x - x)*a_sq+
-                                     (atoms[j].y - y)*(atoms[j].y - y)*b_sq+
-                                     (atoms[j].z - z)*(atoms[j].z - z)*c_sq);
+                distance = std::sqrt((atoms[j].positionVector.x - x)*(atoms[j].positionVector.x - x)*a_sq+
+                                     (atoms[j].positionVector.y - y)*(atoms[j].positionVector.y - y)*b_sq+
+                                     (atoms[j].positionVector.z - z)*(atoms[j].positionVector.z - z)*c_sq);
 
                 //unit vectors
-                rx = (atoms[j].x - x)*lattice_a/distance;
-                ry = (atoms[j].y - y)*lattice_b/distance;
-                rz = (atoms[j].z - z)*lattice_c/distance;
+                rx = (atoms[j].positionVector.x - x)*lattice_pars.a/distance;
+                ry = (atoms[j].positionVector.y - y)*lattice_pars.b/distance;
+                rz = (atoms[j].positionVector.z - z)*lattice_pars.c/distance;
 
                 atoms[i].inv_distances_cubed.push_back(1.0/(std::pow((distance),3)));
                 atoms[i].inv_distances_five.push_back(1.0/(std::pow((distance),5)));
-                atoms[i].distVecX.push_back(rx);
-                atoms[i].distVecY.push_back(ry);
-                atoms[i].distVecZ.push_back(rz);
+                
+                atoms[i].distanceVectors.push_back({rx, ry, rz});
 
                 atoms[i].magmag.push_back(MAGFE3*MAGFE3);
 
@@ -156,9 +121,9 @@ int Crystal::outputStats(){
     for(int i =0; i< totalAtoms; i++){
         if(atoms[i].isApbAtom){
             apbAtoms++;
-            if(atoms[i].position == 0){
+            if(atoms[i].structuralPositionID == StructuralPositions::kOctahedral){
                 oct++;
-            } else if(atoms[i].position == 1){
+            } else if(atoms[i].structuralPositionID == StructuralPositions::kTetrahedral){
                 tet++;
             }
         }
@@ -168,41 +133,43 @@ int Crystal::outputStats(){
     return totalAtoms;
 }
 
-void Crystal::structure_snapshot(std::string filename){
+void Crystal::structureSnapshot(std::string filename){
     std::ofstream structure;
     structure.open(filename, std::fstream::out);
     for(int i=0; i< atoms.size(); i++){
-        structure << atoms[i].x << ", " << atoms[i].y << ", " << atoms[i].z <<", "<< atoms[i].spinx << ", " << atoms[i].spiny << ", " << atoms[i].spinz  << ", " << atoms[i].position << ", " << atoms[i].isApbAtom << "\n";
+        structure << atoms[i].positionVector.x << ", " << atoms[i].positionVector.y << ", " << atoms[i].positionVector.z << ", " <<
+        atoms[i].spinVector.x << ", " << atoms[i].spinVector.y << ", " << atoms[i].spinVector.z  << ", " <<
+        StructurePositionTypes[static_cast<int>(atoms[i].structuralPositionID)] << ", " << atoms[i].isApbAtom << "\n";
     }
     structure.close();
 }
 
-void Crystal::generate_macrocells(double macrocell_size){
+void Crystal::generateMacrocells(double macrocell_size){
     
     // find minimum position
-    double x_min=atoms[0].x, y_min=atoms[0].y, z_min=atoms[0].z;
+    double x_min=atoms[0].positionVector.x, y_min=atoms[0].positionVector.y, z_min=atoms[0].positionVector.z;
     for(int i=0; i<atoms.size(); i++){
-        if(atoms[i].x < x_min){
-            x_min = atoms[i].x;
+        if(atoms[i].positionVector.x < x_min){
+            x_min = atoms[i].positionVector.x;
         }
-        if(atoms[i].y < y_min){
-            y_min = atoms[i].y;
+        if(atoms[i].positionVector.y < y_min){
+            y_min = atoms[i].positionVector.y;
         }
-        if(atoms[i].z < z_min){
-            z_min = atoms[i].z;
+        if(atoms[i].positionVector.z < z_min){
+            z_min = atoms[i].positionVector.z;
         }
     }
     // find maximum position
-    double x_max=atoms[0].x, y_max=atoms[0].y, z_max=atoms[0].z;
+    double x_max=atoms[0].positionVector.x, y_max=atoms[0].positionVector.y, z_max=atoms[0].positionVector.z;
     for(int i=0; i<atoms.size(); i++){
-        if(atoms[i].x > x_max){
-            x_max = atoms[i].x;
+        if(atoms[i].positionVector.x > x_max){
+            x_max = atoms[i].positionVector.x;
         }
-        if(atoms[i].y > y_max){
-            y_max = atoms[i].y;
+        if(atoms[i].positionVector.y > y_max){
+            y_max = atoms[i].positionVector.y;
         }
-        if(atoms[i].z > z_max){
-            z_max = atoms[i].z;
+        if(atoms[i].positionVector.z > z_max){
+            z_max = atoms[i].positionVector.z;
         }
     }
     
@@ -228,9 +195,9 @@ void Crystal::generate_macrocells(double macrocell_size){
     double w = macrocell_size/2.0;
     for(int j=0; j<atoms.size(); j++){
         for(int i=0; i<macrocells.size(); i++){
-            if(atoms[j].x < macrocells[i].center_x+w and atoms[j].x >= macrocells[i].center_x-w
-               and atoms[j].y < macrocells[i].center_y+w and atoms[j].y >= macrocells[i].center_y-w
-               and atoms[j].z < macrocells[i].center_z+w and atoms[j].z >= macrocells[i].center_z-w){
+            if(atoms[j].positionVector.x < macrocells[i].center_x+w and atoms[j].positionVector.x >= macrocells[i].center_x-w
+               and atoms[j].positionVector.y < macrocells[i].center_y+w and atoms[j].positionVector.y >= macrocells[i].center_y-w
+               and atoms[j].positionVector.z < macrocells[i].center_z+w and atoms[j].positionVector.z >= macrocells[i].center_z-w){
                 macrocells[i].macrocell_atoms.push_back(&atoms[j]);
             }
         }
@@ -265,9 +232,9 @@ void Crystal::generate_macrocells(double macrocell_size){
         // effective volume = N_atoms_per_macrocell*V_atom = N_atoms_per_macrocell * V_unit_cell/N_atoms_per_unit_cell
         macrocells[i].inv_effective_volume = 1.0/((macrocells[i].macrocell_atoms.size()*std::pow(8.3965,3)/24.0)*1e-30);
         for(int j=0; j<macrocells[i].macrocell_atoms.size(); j++){
-            macrocells[i].center_x += macrocells[i].macrocell_atoms[j]->x;
-            macrocells[i].center_y += macrocells[i].macrocell_atoms[j]->y;
-            macrocells[i].center_z += macrocells[i].macrocell_atoms[j]->z;
+            macrocells[i].center_x += macrocells[i].macrocell_atoms[j]->positionVector.x;
+            macrocells[i].center_y += macrocells[i].macrocell_atoms[j]->positionVector.y;
+            macrocells[i].center_z += macrocells[i].macrocell_atoms[j]->positionVector.z;
             n+=1.0;
         }
         macrocells[i].center_x /= n;
@@ -305,14 +272,14 @@ void Crystal::generate_macrocells(double macrocell_size){
         macrocells[i].total_moment[1] = 0.0;
         macrocells[i].total_moment[2] = 0.0;
         for(int k=0; k<macrocells[i].macrocell_atoms.size(); k++){
-            macrocells[i].total_moment[0] += macrocells[i].macrocell_atoms[k]->spinx*MAGFE3;
-            macrocells[i].total_moment[1] += macrocells[i].macrocell_atoms[k]->spiny*MAGFE3;
-            macrocells[i].total_moment[2] += macrocells[i].macrocell_atoms[k]->spinz*MAGFE3;
+            macrocells[i].total_moment[0] += macrocells[i].macrocell_atoms[k]->spinVector.x*MAGFE3;
+            macrocells[i].total_moment[1] += macrocells[i].macrocell_atoms[k]->spinVector.y*MAGFE3;
+            macrocells[i].total_moment[2] += macrocells[i].macrocell_atoms[k]->spinVector.z*MAGFE3;
         }
     }
 }
 
-void Crystal::save_macrocells(std::string filename){
+void Crystal::saveMacrocells(std::string filename){
     std::ofstream macrocells_centers;
     macrocells_centers.open(filename, std::fstream::out);
     for(int i=0; i< macrocells.size(); i++){
@@ -323,93 +290,42 @@ void Crystal::save_macrocells(std::string filename){
     macrocells_centers.close();
 }
 
-void Crystal::reset_structure(){
+void Crystal::resetStructure(){
     for(int i=0; i<atoms.size(); i++){
-        double s[3];
-        marsaglia(s);
-        atoms[i].spinx = s[0];
-        atoms[i].spiny = s[1];
-        atoms[i].spinz = s[2];
+        LinalgVector randomSpin;
+        marsaglia(randomSpin);
+        atoms[i].spinVector = randomSpin;
     }
 }
 
-void Crystal::set_sigma(double sigma){
+void Crystal::setSigma(double sigma){
     for(int i=0; i< atoms.size(); i++){
         atoms[i].sigma = sigma;
     }
 }
 
-void Crystal::rotateCrystal(double alpha,double beta,double gamma, double center){
-    
-    double alphaRad = alpha * PI/180;
-    double betaRad = beta * PI/180;
-    double gammaRad = gamma * PI/180;
- 
-    double center_x = center;
-    double center_y = center;
-    double center_z = center;
-    
-    double x, y, z;
-    double x2, y2, z2;
-    double x3, y3, z3;
-
-
-    for (unsigned int i = 0 ; i< atoms.size(); i++){
-        // set particle into coordinate system origin
-        x = atoms[i].x - center_x;
-        y = atoms[i].y - center_y;
-        z = atoms[i].z - center_z;
-
-        // x-rotation with rotation matrix
-        atoms[i].x = x*1.0 + y*0.0 + z*0.0;
-        atoms[i].y = x*0.0 + y*std::cos(alphaRad) + z*-(std::sin(alphaRad));
-        atoms[i].z = x*0.0 + y*std::sin(alphaRad) + z*std::cos(alphaRad);
-
-        // temporary storing the new coordinates
-        x2 = atoms[i].x;
-        y2 = atoms[i].y;
-        z2 = atoms[i].z;
-
-        // y-rotation
-        atoms[i].x = x2*std::cos(betaRad) + y2*0.0 + z2*std::sin(betaRad);
-        atoms[i].y = x2*0.0 + y2*1.0 + z2*0.0;
-        atoms[i].z = x2*-(std::sin(betaRad)) + y2*0.0 + z2*std::cos(betaRad);
-
-        x3 = atoms[i].x;
-        y3 = atoms[i].y;
-        z3 = atoms[i].z;
-
-        // z-rotation
-        atoms[i].x = x3*std::cos(gammaRad) + y3*-(std::sin(gammaRad)) + z3*0.0;
-        atoms[i].y = x3*std::sin(gammaRad) + y3*std::cos(gammaRad) + z3*0.0;
-        atoms[i].z = x3*0.0 + y3*0.0 + z3*1.0;
-
-        // particle gets set back to original position in space
-        atoms[i].x = atoms[i].x + center_x;
-        atoms[i].y = atoms[i].y + center_y;
-        atoms[i].z = atoms[i].z + center_z;
+void Crystal::rotateCrystal(LinalgVector angles, double center){
+    for(auto i=0; i<atoms.size(); ++i){
+        atoms[i].positionVector.rotate(angles.x, angles.y, angles.z, center);
     }
 }
 
-void Crystal::random_orientation(){
-    double angles[3];
+void Crystal::randomOrientation(){
+    LinalgVector angles;
     rand0_360(angles);
-    rotateCrystal(angles[0], angles[1], angles[2], center);
+    rotateCrystal(angles, center);
 }
 
-void Crystal::align_along_random_vector(){
-    reset_structure();
-    double random_magnetization_vector[3];
-    marsaglia(random_magnetization_vector);
+void Crystal::alignAlongRandomVector(){
+    resetStructure();
+    LinalgVector randomVector;
+    marsaglia(randomVector);
     for(int atom = 0; atom<(int)atoms.size(); atom++){
-        if( atoms[atom].position == 0){
-            atoms[atom].spinx = random_magnetization_vector[0];
-            atoms[atom].spiny = random_magnetization_vector[1];
-            atoms[atom].spinz = random_magnetization_vector[2];
+        if( atoms[atom].structuralPositionID == StructuralPositions::kOctahedral){
+            atoms[atom].spinVector = randomVector;
         } else {
-            atoms[atom].spinx = -random_magnetization_vector[0];
-            atoms[atom].spiny = -random_magnetization_vector[1];
-            atoms[atom].spinz = -random_magnetization_vector[2];
+            atoms[atom].spinVector = -randomVector;
+            
         }
     }
 }

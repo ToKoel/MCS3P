@@ -21,7 +21,7 @@ struct retVals {
 
 void sigma_tests(double sigma);
 void dipole_calcs(bool APB, int D_min, int D_max);
-void relaxation_test(double size, double sigma, int steps, bool APB);
+void relaxation_test(double size, double sigma, int steps, bool APB, std::string output_path);
 void calc_dipole_field();
 retVals particle_configurations_test(std::string mode, std::string infile, std::string outfile, double c);
 

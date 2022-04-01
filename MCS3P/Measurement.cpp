@@ -17,18 +17,18 @@ std::vector<T> arange(T start, T stop, T step = 1) {
 
 // helper function to convert doubles to string for filenames
 std::string num_to_string(double number, int precision){
-    std::string double_string = std::to_string((int)(number))+"d";
+    std::string double_string = std::to_string(static_cast<int>(number))+"d";
     double multiplier = 10.0;
     int A = 0;
     for(int i=0; i<precision; i++){
-        A = (int)(number*multiplier - (int)(number*multiplier/10.0)*10);
+        A = static_cast<int>(number*multiplier - static_cast<int>(number*multiplier/10.0)*10);
         double_string += std::to_string(A);
         multiplier *= 10.0;
     }
     return double_string;
 }
 
-MvsTMeasurement::MvsTMeasurement(std::string dipoleInteractions,
+MvsTMeasurement::MvsTMeasurement(std::string dipoleInteractionsStr,
                                  double steps,
                                  int averaging_steps,
                                  int numOrientations,
@@ -38,7 +38,6 @@ MvsTMeasurement::MvsTMeasurement(std::string dipoleInteractions,
                                  double TLowerLimit,
                                  double TstepSize,
                                  double macrocell_size):
-dipoleInteractions(dipoleInteractions),
 steps(steps),
 averaging_steps(averaging_steps),
 numOrientations(numOrientations),
@@ -48,6 +47,14 @@ TUpperLimit(TUpperLimit),
 TLowerLimit(TLowerLimit),
 TstepSize(TstepSize),
 macrocell_size(macrocell_size){
+    
+    if(dipoleInteractionsStr == "brute_force"){
+        dipoleInteractions = DipoleInteractions::kBruteForce;
+    } else if(dipoleInteractionsStr == "macrocell_method"){
+        dipoleInteractions = DipoleInteractions::kMacrocellMethod;
+    } else {
+        dipoleInteractions = DipoleInteractions::kNoInteractions;
+    }
 }
 
 void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string structure_filename,
@@ -64,26 +71,22 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
     output_filename += "_MvsT_sim_cF" + num_to_string(cooling_field, 2);
     output_filename += "T_mF" + num_to_string(measurement_field, 3);
     output_filename += "T_" + num_to_string(steps, 1) + "steps";
-    output_filename += "_" + std::to_string((int)averaging_steps) + "avsteps";
-    output_filename += "_" + std::to_string((int)numOrientations) + "or";
+    output_filename += "_" + std::to_string(static_cast<int>(averaging_steps)) + "avsteps";
+    output_filename += "_" + std::to_string(static_cast<int>(numOrientations)) + "or";
     output_filename += "_" + num_to_string(sigma, 2) + "sig";
     
-    if(dipoleInteractions == "macrocell_method"){
-        output_filename += "_0d" + std::to_string((int)(macrocell_size*100)) + "mcsize";
+    if(dipoleInteractions == DipoleInteractions::kMacrocellMethod){
+        output_filename += "_0d" + std::to_string(static_cast<int>(macrocell_size*100)) + "mcsize";
     }
     
     auto temperature_arr_down = arange<double>(TUpperLimit,TLowerLimit,TstepSize);
     auto temperature_arr_up = arange<double>(TLowerLimit,TUpperLimit,TstepSize);
     
     for(int i=0; i< temperature_arr_up.size();i++){
-        mxZFC.push_back(0.0);
-        myZFC.push_back(0.0);
-        mzZFC.push_back(0.0);
+        magnetizationZFC.push_back({0.0, 0.0, 0.0});
     }
     for(int i=0; i< temperature_arr_down.size();i++){
-        mxFC.push_back(0.0);
-        myFC.push_back(0.0);
-        mzFC.push_back(0.0);
+        magnetizationFC.push_back({0.0, 0.0, 0.0});
     }
     
     ProgressBar bar;
@@ -92,62 +95,52 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
     bar.fill_bar_remainder_with(" ");
     bar.update(0);
     
-    Crystal crystal(structure_filename,
-                    dipoleInteractions,
-                    FeTT, FeOO, FeTO, FeOO_APB,
+    
+    Crystal crystal(structure_filename, dipoleInteractions,
+                    ExchangeConstants(FeTT, FeOO, FeTO, FeOO_APB),
                     anisotropyConstant,
-                    0.0, 0.0, 0.0, // orientation angles
+                    {0.0, 0.0, 0.0},
                     macrocell_size, center,
-                    lattice_a, lattice_b, lattice_c, sigma);
+                    LatticeParameters(lattice_a, lattice_b, lattice_c),
+                    sigma);
 
     for(int i = 0; i < numOrientations; i++){
         bar.update((double)(i)/(double)(numOrientations));
         bar.set_status_text("orientation " + std::to_string(i+1));
         
         // set random particle orientation
-        crystal.random_orientation();
+        crystal.randomOrientation();
         // set spin structure fully aligned along random field
-        crystal.align_along_random_vector();
+        crystal.alignAlongRandomVector();
         
-        int totalNumAtoms = (int)crystal.atoms.size();
+        auto totalNumAtoms = crystal.atoms.size();
   
         if(ZFC){
             for(int j=0; j<temperature_arr_up.size(); j++){
             
                 // relaxation steps
-                for(int k = 0; k<(int)(steps*totalNumAtoms); k++){
-                    crystal.atoms[rand0_crystalAtoms(totalNumAtoms)].MonteCarloStep(measurement_field,
+                for(int k = 0; k<static_cast<int>(steps*totalNumAtoms); ++k){
+                    crystal.atoms[rand0_crystalAtoms(static_cast<int>(totalNumAtoms))].MonteCarloStep(measurement_field,
                                                                                     temperature_arr_up[j]);
                 }
-        
-                double mx_temp = 0.0;
-                double my_temp = 0.0;
-                double mz_temp = 0.0;
+                LinalgVector tempMagnetizationVector{0.0, 0.0, 0.0};
             
                 // averaging steps
                 if(averaging_steps == 0){
-                    for(int a=0; a<(int)crystal.atoms.size(); a++){
-                        mx_temp += MAGFE3*crystal.atoms[a].spinx;
-                        my_temp += MAGFE3*crystal.atoms[a].spiny;
-                        mz_temp += MAGFE3*crystal.atoms[a].spinz;
+                    for(auto a=0; a<crystal.atoms.size(); ++a){
+                        tempMagnetizationVector += crystal.atoms[a].spinVector * MAGFE3;
                     }
-                    mxZFC[j] += (mx_temp/(double)(totalNumAtoms))/(double)numOrientations;
-                    myZFC[j] += (my_temp/(double)(totalNumAtoms))/(double)numOrientations;
-                    mzZFC[j] += (mz_temp/(double)(totalNumAtoms))/(double)numOrientations;
+                    magnetizationZFC[j] += tempMagnetizationVector/(static_cast<double>(totalNumAtoms*numOrientations));
                 } else{
-                    for(int m=0; m<averaging_steps*totalNumAtoms; m++){
-                        crystal.atoms[rand0_crystalAtoms(totalNumAtoms)].MonteCarloStep(measurement_field,
+                    for(int m=0; m < static_cast<int>(averaging_steps*totalNumAtoms); ++m){
+                        crystal.atoms[rand0_crystalAtoms(static_cast<int>(totalNumAtoms))].MonteCarloStep(measurement_field,
                                                                                         temperature_arr_up[j]);
                     
-                        for(int a=0; a<(int)crystal.atoms.size(); a++){
-                            mx_temp += MAGFE3*crystal.atoms[a].spinx;
-                            my_temp += MAGFE3*crystal.atoms[a].spiny;
-                            mz_temp += MAGFE3*crystal.atoms[a].spinz;
+                        for(auto a=0; a<crystal.atoms.size(); ++a){
+                            tempMagnetizationVector += crystal.atoms[a].spinVector * MAGFE3;
                         }
                     }
-                    mxZFC[j] += (mx_temp/(double)(averaging_steps*totalNumAtoms))/(double)numOrientations;
-                    myZFC[j] += (my_temp/(double)(averaging_steps*totalNumAtoms))/(double)numOrientations;
-                    mzZFC[j] += (mz_temp/(double)(averaging_steps*totalNumAtoms))/(double)numOrientations;
+                    magnetizationZFC[j] += tempMagnetizationVector/(static_cast<double>(totalNumAtoms*numOrientations));
                 } // end of averaging steps
             } // end of ZFC measurement
      
@@ -155,7 +148,7 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
             std::ofstream tSweepZfc;
             tSweepZfc.open (output_filename + "_ZFC.txt", std::fstream::out);
             tSweepZfc << "# structure_file: " << structure_filename << std::endl;
-            tSweepZfc << "# dipole_interactions: " << dipoleInteractions << std::endl;
+            tSweepZfc << "# dipole_interactions: " << DipoleInteractionTypes[static_cast<int>(dipoleInteractions)] << std::endl;
             tSweepZfc << "# steps: " << steps << std::endl;
             tSweepZfc << "# num_orientations: " << numOrientations  << std::endl;
             tSweepZfc << "# measurement_field: " << measurement_field << std::endl;
@@ -170,7 +163,7 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
             tSweepZfc << "# lattice parameters: " << lattice_a << ", " << lattice_b << ", " << lattice_c << std::endl;
             tSweepZfc << "# sigma: " << sigma << std::endl;
             for(int currentStep = 0; currentStep < temperature_arr_up.size(); currentStep++){
-                tSweepZfc << temperature_arr_up[currentStep] << " " << mxZFC[currentStep] << " " << myZFC[currentStep] << " " << mzZFC[currentStep] << "\n";
+                tSweepZfc << temperature_arr_up[currentStep] << " " << magnetizationZFC[currentStep].x << " " << magnetizationZFC[currentStep].y << " " << magnetizationZFC[currentStep].z << "\n";
             }
         } // end of ZFC
         
@@ -178,38 +171,28 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
             for(int j=0; j<temperature_arr_down.size(); j++){
           
                 // relaxation steps
-                for(int k = 0; k< (int)(steps*totalNumAtoms); k++){
-                    crystal.atoms[rand0_crystalAtoms(totalNumAtoms)].MonteCarloStep(measurement_field,
+                for(int k = 0; k< static_cast<int>(steps*totalNumAtoms); k++){
+                    crystal.atoms[rand0_crystalAtoms(static_cast<int>(totalNumAtoms))].MonteCarloStep(measurement_field,
                                                                                     temperature_arr_down[j]);
                 }
     
-                double mx_temp_fc = 0.0;
-                double my_temp_fc = 0.0;
-                double mz_temp_fc = 0.0;
+                LinalgVector tempMagnetizationVector{0.0, 0.0, 0.0};
 
                 // averaging steps
                 if(averaging_steps == 0){
-                    for(int a=0; a<(int)crystal.atoms.size(); a++){
-                        mx_temp_fc += MAGFE3*crystal.atoms[a].spinx;
-                        my_temp_fc += MAGFE3*crystal.atoms[a].spiny;
-                        mz_temp_fc += MAGFE3*crystal.atoms[a].spinz;
+                    for(auto a=0; a<crystal.atoms.size(); ++a){
+                        tempMagnetizationVector += crystal.atoms[a].spinVector * MAGFE3;
                     }
-                    mxFC[j] += (mx_temp_fc/(double)(totalNumAtoms))/(double)numOrientations;
-                    myFC[j] += (my_temp_fc/(double)(totalNumAtoms))/(double)numOrientations;
-                    mzFC[j] += (mz_temp_fc/(double)(totalNumAtoms))/(double)numOrientations;
+                    magnetizationFC[j] += tempMagnetizationVector/(static_cast<double>(totalNumAtoms*numOrientations));
                 } else{
-                    for(int m=0; m<averaging_steps*totalNumAtoms; m++){
-                        crystal.atoms[rand0_crystalAtoms(totalNumAtoms)].MonteCarloStep(measurement_field,
+                    for(auto m=0; m<averaging_steps*totalNumAtoms; ++m){
+                        crystal.atoms[rand0_crystalAtoms(static_cast<int>(totalNumAtoms))].MonteCarloStep(measurement_field,
                                                                                         temperature_arr_down[j]);
-                        for(int a=0; a<(int)crystal.atoms.size(); a++){
-                            mx_temp_fc += MAGFE3*crystal.atoms[a].spinx;
-                            my_temp_fc += MAGFE3*crystal.atoms[a].spiny;
-                            mz_temp_fc += MAGFE3*crystal.atoms[a].spinz;
+                        for(auto a=0; a< crystal.atoms.size(); ++a){
+                            tempMagnetizationVector += crystal.atoms[a].spinVector * MAGFE3;
                         }
                     }
-                    mxFC[j] += (mx_temp_fc/(double)(averaging_steps*totalNumAtoms))/(double)numOrientations;
-                    myFC[j] += (my_temp_fc/(double)(averaging_steps*totalNumAtoms))/(double)numOrientations;
-                    mzFC[j] += (mz_temp_fc/(double)(averaging_steps*totalNumAtoms))/(double)numOrientations;
+                    magnetizationFC[j] += tempMagnetizationVector/(static_cast<double>(averaging_steps*totalNumAtoms*numOrientations));
                 } // end of averaging steps
             } // end of FC measurement
            
@@ -217,7 +200,7 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
             std::ofstream tSweepFc;
             tSweepFc.open (output_filename + "_FC.txt", std::fstream::out);
             tSweepFc << "# structure_file: " << structure_filename << std::endl;
-            tSweepFc << "# dipole_interactions: " << dipoleInteractions << std::endl;
+            tSweepFc << "# dipole_interactions: " << DipoleInteractionTypes[static_cast<int>(dipoleInteractions)] << std::endl;
             tSweepFc << "# steps: " << steps << std::endl;
             tSweepFc << "# num_orientations: " << numOrientations  << std::endl;
             tSweepFc << "# measurement_field: " << measurement_field << std::endl;
@@ -234,7 +217,7 @@ void MvsTMeasurement::temperatureSweep(std::string output_dir, std::string struc
             tSweepFc << "# " << std::endl;
             tSweepFc << "# field (T)      M_x(B)      M_y(B)      M_z(B)" << std::endl;
             for(int currentStep = 0; currentStep < temperature_arr_down.size(); currentStep++){
-                tSweepFc << temperature_arr_down[currentStep] << " " << mxFC[currentStep] << " " << myFC[currentStep] << " " << mzFC[currentStep] << "\n";
+                tSweepFc << temperature_arr_down[currentStep] << " " << magnetizationFC[currentStep].x << " " << magnetizationFC[currentStep].y << " " << magnetizationFC[currentStep].z << "\n";
             }
         } // end of FC
     } // end of orientation
@@ -264,7 +247,7 @@ void run_MvsT(std::string output_dir, std::string structure_filename,std::string
 }
 
 
-MvsBMeasurement::MvsBMeasurement(std::string dipoleInteractions,
+MvsBMeasurement::MvsBMeasurement(std::string dipoleInteractionsStr,
                                  int steps,
                                  int numOrientations,
                                  double temperature,
@@ -275,7 +258,7 @@ MvsBMeasurement::MvsBMeasurement(std::string dipoleInteractions,
                                  double tempStep,
                                  double coolingField,
                                  int coolingSteps, double macrocell_size):
-dipoleInteractions(dipoleInteractions),
+
 steps(steps),
 numOrientations(numOrientations),
 temperature(temperature),
@@ -283,6 +266,14 @@ BUpperLimit(BUpperLimit), BLowerLimit(BLowerLimit), BstepSize(BstepSize),
 startTemp(startTemp), tempStep(tempStep),
 coolingField(coolingField), coolingSteps(coolingSteps),
 macrocell_size(macrocell_size) {
+    
+    if(dipoleInteractionsStr == "brute_force"){
+        dipoleInteractions = DipoleInteractions::kBruteForce;
+    } else if(dipoleInteractionsStr == "macrocell_method"){
+        dipoleInteractions = DipoleInteractions::kMacrocellMethod;
+    } else {
+        dipoleInteractions = DipoleInteractions::kNoInteractions;
+    }
     
     // generate field arrays
     BnumberOfSteps = (BUpperLimit/BstepSize)+2*((BUpperLimit-BLowerLimit)/BstepSize);
@@ -316,14 +307,14 @@ void MvsBMeasurement::fieldSweep(std::string output_dir,
     
     std::string output_filename = structure_filename.substr(structure_filename.find_last_of("/")+1);
     output_filename += "_Hysteresis_sim_"+num_to_string(temperature, 1);
-    output_filename += "K_"+std::to_string((int)(steps))+"steps";
-    output_filename += "_"+std::to_string((int)(numOrientations))+"or";
+    output_filename += "K_"+std::to_string(static_cast<int>(steps))+"steps";
+    output_filename += "_"+std::to_string(static_cast<int>(numOrientations))+"or";
     output_filename += "_"+num_to_string(coolingField, 2)+"T";
     output_filename += "_"+num_to_string(coolingSteps, 2)+"cs";
     output_filename += "_sT"+num_to_string(startTemp, 1)+"K";
-    output_filename += "_dip"+dipoleInteractions;
-    if(dipoleInteractions == "macrocell_method"){
-        output_filename += "_0d" + std::to_string((int)(macrocell_size*100)) + "mcsize";
+    output_filename += "_dip"+ DipoleInteractionTypes[static_cast<int>(dipoleInteractions)];
+    if(dipoleInteractions == DipoleInteractions::kMacrocellMethod){
+        output_filename += "_0d" + std::to_string(static_cast<int>(macrocell_size*100)) + "mcsize";
     }
     
     std::cout << "\nOutput filename: " << output_filename << std::endl;
@@ -347,15 +338,15 @@ void MvsBMeasurement::fieldSweep(std::string output_dir,
         bar.update((double)(i)/(double)(numOrientations));
         bar.set_status_text("orientation " + std::to_string(i+1));
         
-        double angles[3];
+        LinalgVector angles;
         rand0_360(angles);
     
         Crystal crystal(structure_filename, dipoleInteractions,
-                        FeTT, FeOO, FeTO, FeOO_APB,
+                        ExchangeConstants(FeTT, FeOO, FeTO, FeOO_APB),
                         anisotropyConstant,
-                        angles[0], angles[1], angles[2],
+                        angles,
                         macrocell_size, center,
-                        lattice_a, lattice_b, lattice_c,
+                        LatticeParameters(lattice_a, lattice_b, lattice_c),
                         sigma);
         
         int totalNumAtoms = int(crystal.atoms.size());
@@ -376,16 +367,16 @@ void MvsBMeasurement::fieldSweep(std::string output_dir,
                                                                                 temperature);
             }
             for(unsigned int l=0; l<=crystal.atoms.size(); l++){
-                mX[j] += MAGFE3*crystal.atoms[l].spinx;
-                mY[j] += MAGFE3*crystal.atoms[l].spiny;
-                mZ[j] += MAGFE3*crystal.atoms[l].spinz;
+                mX[j] += MAGFE3*crystal.atoms[l].spinVector.x;
+                mY[j] += MAGFE3*crystal.atoms[l].spinVector.y;
+                mZ[j] += MAGFE3*crystal.atoms[l].spinVector.z;
             }
         }
         
         std::ofstream bSweep;
         bSweep.open (output_filename + ".txt", std::fstream::out);
         bSweep << "# structure_file: " << structure_filename << std::endl;
-        bSweep << "# dipole_interactions: " << dipoleInteractions << std::endl;
+        bSweep << "# dipole_interactions: " << DipoleInteractionTypes[static_cast<int>(dipoleInteractions)] << std::endl;
         bSweep << "# steps: " << steps << std::endl;
         bSweep << "# num_orientations: " << numOrientations  << std::endl;
         bSweep << "# temperature: " << temperature << std::endl;
@@ -440,20 +431,27 @@ void run_MvsB(std::string output_dir,
                                center, sigma);
 }
 
-spinStructure::spinStructure(std::string dipoleInteractions,
+spinStructure::spinStructure(std::string dipoleInteractionsStr,
                              int steps,
                              double magneticField,
                              double temperature,
                              double macrocell_size,
                              std::string output_dir,
                              std::string structure_filename):
-                             dipoleInteractions(dipoleInteractions),
                              steps(steps),
                              magneticField(magneticField),
                              temperature(temperature),
                              macrocell_size(macrocell_size),
                              output_dir(output_dir),
                              structure_filename(structure_filename){
+                                 
+                                 if(dipoleInteractionsStr == "brute_force"){
+                                     dipoleInteractions = DipoleInteractions::kBruteForce;
+                                 } else if(dipoleInteractionsStr == "macrocell_method"){
+                                     dipoleInteractions = DipoleInteractions::kMacrocellMethod;
+                                 } else {
+                                     dipoleInteractions = DipoleInteractions::kNoInteractions;
+                                 }
 };
 
 void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeTO, double FeOO_APB,
@@ -462,12 +460,13 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
                                              double center,
                                              double lattice_a, double lattice_b, double lattice_c,
                                              double sigma){
+    
     Crystal crystal(structure_filename, dipoleInteractions,
-                    FeTT, FeOO, FeTO, FeOO_APB,
+                    ExchangeConstants(FeTT, FeOO, FeTO, FeOO_APB),
                     anisotropyConstant,
-                    alpha, beta, gamma,
+                    {alpha, beta, gamma},
                     macrocell_size, center,
-                    lattice_a, lattice_b, lattice_c,
+                    LatticeParameters(lattice_a, lattice_b, lattice_c),
                     sigma);
 
     int totalNumAtoms = int(crystal.atoms.size());
@@ -489,7 +488,7 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
         }
         start_T -= 10.0;
         std::cout << start_T << std::endl;
-        bar2.set_status_text("temperature: " + std::to_string((int)start_T));
+        bar2.set_status_text("temperature: " + std::to_string(static_cast<int>start_T));
     }
     bar2.set_status_text("cooling finished");
     */
@@ -513,20 +512,20 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
             
         std::string output_filename = output_dir;
         output_filename += structure_filename.substr(structure_filename.find_last_of("/")+1);
-        output_filename += "_spin_structure_"+std::to_string((int)(temperature));
-        output_filename += "K_"+std::to_string((int)(steps))+"MCS";
-        output_filename += "_"+ std::to_string((int)magneticField) +"T";
-        output_filename += "_dip"+dipoleInteractions;
-        if(dipoleInteractions == "macrocell_method"){
-            output_filename += "_0d" + std::to_string((int)(macrocell_size*100)) + "mcsize";
+        output_filename += "_spin_structure_"+std::to_string(static_cast<int>(temperature));
+        output_filename += "K_"+std::to_string(static_cast<int>(steps))+"MCS";
+        output_filename += "_"+ std::to_string(static_cast<int>(magneticField)) +"T";
+        output_filename += "_dip"+ DipoleInteractionTypes[static_cast<int>(dipoleInteractions)];
+        if(dipoleInteractions == DipoleInteractions::kMacrocellMethod){
+            output_filename += "_0d" + std::to_string(static_cast<int>(macrocell_size*100)) + "mcsize";
         }
         
         std::ofstream structure;
         structure.open(output_filename + ".txt", std::fstream::out);
         
         structure << "# structure_file: " << structure_filename << std::endl;
-        structure << "# dipole_interactions: " << dipoleInteractions << std::endl;
-        if(dipoleInteractions == "macrocell_method"){
+        structure << "# dipole_interactions: " << DipoleInteractionTypes[static_cast<int>(dipoleInteractions)] << std::endl;
+        if(dipoleInteractions == DipoleInteractions::kMacrocellMethod){
             structure << "# macrocell_size: " << macrocell_size << std::endl;
         }
         structure << "# steps: " << steps << std::endl;
@@ -544,13 +543,13 @@ void spinStructure::spinStructureMeasurement(double FeTT,double FeOO, double FeT
         structure << "# x      y        z      spinx    spiny    spinz  pos  APB" << std::endl;
         
         for(int i=0; i< crystal.atoms.size(); i++){
-            structure << crystal.atoms[i].x << ", "
-                      << crystal.atoms[i].y << ", "
-                      << crystal.atoms[i].z << ", "
-                      << crystal.atoms[i].spinx << ", "
-                      << crystal.atoms[i].spiny << ", "
-                      << crystal.atoms[i].spinz << ", "
-                      << crystal.atoms[i].position << ", "
+            structure << crystal.atoms[i].positionVector.x << ", "
+                      << crystal.atoms[i].positionVector.y << ", "
+                      << crystal.atoms[i].positionVector.z << ", "
+                      << crystal.atoms[i].spinVector.x << ", "
+                      << crystal.atoms[i].spinVector.y << ", "
+                      << crystal.atoms[i].spinVector.z << ", "
+                      << StructurePositionTypes[static_cast<int>(crystal.atoms[i].structuralPositionID)] << ", "
                       << crystal.atoms[i].isApbAtom << "\n";
         }
     } // end of spin structure simulation

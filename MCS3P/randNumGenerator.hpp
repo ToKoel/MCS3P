@@ -3,15 +3,16 @@
 
 #include <cmath>
 #include <iostream>
+#include "HelperStructs.hpp"
 
 long rnd250();
 void seed250(long);
-void marsaglia(double*);
+void marsaglia(LinalgVector&);
 double rand0001_0999();
 int rand0_crystalSize(int dimension);
 double rand0_1();
 double rand0_90();
-void rand0_360(double*);
+void rand0_360(LinalgVector&);
 int rand0_crystalAtoms(int totalNumAtoms);
 double gaussian_marsaglia(double stdDev);
 double gaussian_ziggurat();

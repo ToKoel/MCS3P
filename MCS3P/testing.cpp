@@ -14,7 +14,10 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
 
     std::string spin_file = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/spins_" + numf + ".txt";
    // Crystal crystal(struct_file, "brute_force", -21.0,-8.6,-28.1,-106.28,3.25e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
-    Crystal crystal(struct_file, "brute_force", 0.0,-8.6,-28.1,-106.28,3.25e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
+    Crystal crystal(struct_file, DipoleInteractions::kBruteForce,
+                    ExchangeConstants(0.0,-8.6,-28.1,-106.28) ,3.25e-25,
+                    {0.0,0.0,-45.0}, 0.1, center,
+                    LatticeParameters(8.3965,8.3965,8.3965),0.03);
     
     // output file
     std::string fname = outfile;
@@ -28,25 +31,17 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
     
     if(mode == "domain"){
         for(int i=0; i<crystal.atoms.size(); i++){
-            if (crystal.atoms[i].y > center){
-                if (crystal.atoms[i].position == 0){
-                    crystal.atoms[i].spinx = -1.0;
-                    crystal.atoms[i].spiny = 0.0;
-                    crystal.atoms[i].spinz = 0.0;
+            if (crystal.atoms[i].positionVector.y > center){
+                if (crystal.atoms[i].structuralPositionID == StructuralPositions::kOctahedral){
+                    crystal.atoms[i].spinVector = {-1.0, 0.0, 0.0};
                 } else{
-                    crystal.atoms[i].spinx = 1.0;
-                    crystal.atoms[i].spiny = 0.0;
-                    crystal.atoms[i].spinz = 0.0;
+                    crystal.atoms[i].spinVector = {1.0, 0.0, 0.0};
                 }
-            } else if (crystal.atoms[i].y <= center){
-                if (crystal.atoms[i].position == 0){
-                    crystal.atoms[i].spinx = 1.0;
-                    crystal.atoms[i].spiny = 0.0;
-                    crystal.atoms[i].spinz = 0.0;
+            } else if (crystal.atoms[i].positionVector.y <= center){
+                if (crystal.atoms[i].structuralPositionID == StructuralPositions::kOctahedral){
+                    crystal.atoms[i].spinVector = {1.0, 0.0, 0.0};
                 } else{
-                    crystal.atoms[i].spinx = -1.0;
-                    crystal.atoms[i].spiny = 0.0;
-                    crystal.atoms[i].spinz = 0.0;
+                    crystal.atoms[i].spinVector = {-1.0, 0.0, 0.0};
                 }
             }
         }
@@ -54,14 +49,10 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
     
     if(mode == "aligned"){
         for(int i=0; i<crystal.atoms.size(); i++){
-            if (crystal.atoms[i].position == 0){
-                crystal.atoms[i].spinx = 1.0;
-                crystal.atoms[i].spiny = 0.0;
-                crystal.atoms[i].spinz = 0.0;
+            if (crystal.atoms[i].structuralPositionID == StructuralPositions::kOctahedral){
+                crystal.atoms[i].spinVector = {1.0, 0.0, 0.0};
             } else{
-                crystal.atoms[i].spinx = -1.0;
-                crystal.atoms[i].spiny = 0.0;
-                crystal.atoms[i].spinz = 0.0;
+                crystal.atoms[i].spinVector = {-1.0, 0.0, 0.0};
             }
         }
     }
@@ -81,9 +72,7 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
         for(int i =0; i<crystal.atoms.size(); i++){
             double u,v,w;
             inFile >> u >> v >> w ;
-            crystal.atoms[i].spinx = u;
-            crystal.atoms[i].spiny = v;
-            crystal.atoms[i].spinz = w;
+            crystal.atoms[i].spinVector = {u, v, w};
         }
         inFile.close();
         std::cout << "    Structure file reading successfull!" << std::endl;
@@ -94,7 +83,7 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
         E_e += crystal.atoms[i].exchange();
         E_z += crystal.atoms[i].zeeman(5.0);
         E_d += crystal.atoms[i].dipole();
-        sum_Sx += crystal.atoms[i].spinx;
+        sum_Sx += crystal.atoms[i].spinVector.x;
     }
     E_total += E_a + E_e + E_z + E_d;
     std::cout << "E_a: " << E_a << std::endl;
@@ -104,7 +93,7 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
     std::cout << "E_total: " << E_total << std::endl;
     
     
-    crystal.structure_snapshot(fname);
+    crystal.structureSnapshot(fname);
     return retVals{E_a, E_e, E_z, E_d};
 }
 
@@ -113,7 +102,11 @@ void calc_dipole_field(){
     double center = 6.0;
     std::string struct_file ="/Users/tobiaskohler/PhD/APB-Paper/Monte-Carlo_Simulation/New_simulations_different_sizes/D11/D11_no_dip/5T_noAPB/D11_structure_noAPB_" + numf;
     std::string spin_file = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/spins_" + numf + ".txt";
-    Crystal crystal(struct_file, "brute_force", -21.0,-8.6,-28.1,-106.28,3.2e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
+    
+    Crystal crystal(struct_file, DipoleInteractions::kBruteForce,
+                    ExchangeConstants(0.0,-8.6,-28.1,-106.28) ,3.25e-25,
+                    {0.0,0.0,-45.0}, 0.1, center,
+                    LatticeParameters(8.3965,8.3965,8.3965),0.03);
     
     std::string fname = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/90deg_domain_APB_D11.txt";
     std::ofstream dipole_field;
@@ -123,11 +116,12 @@ void calc_dipole_field(){
     
     for(int i=0; i< crystal.atoms.size(); i++){
         crystal.atoms[i].dipole_field(H_dip);
-        dipole_field << crystal.atoms[i].x << " " << crystal.atoms[i].y << " " << crystal.atoms[i].z << " " << H_dip[0] << " " << H_dip[1] << " " <<  H_dip[2] << std::endl;
+        dipole_field << crystal.atoms[i].positionVector.x << " " << crystal.atoms[i].positionVector.y << " " << crystal.atoms[i].positionVector.z << " " << H_dip[0] << " " << H_dip[1] << " " <<  H_dip[2] << std::endl;
     }
 }
 
-void relaxation_test(double size, double sigma, int steps, bool APB){
+void relaxation_test(double size, double sigma, int steps, bool APB,
+                     std::string output_path){
     std::string path = "/Users/tobiaskohler/PhD/thesis/Simulations/tests/structures/";
     std::string struct_file = path + "D" + std::to_string((int)size) + "_structure_";
     std::string A = " ";
@@ -138,7 +132,8 @@ void relaxation_test(double size, double sigma, int steps, bool APB){
         struct_file += "noAPB";
         A = "_noAPB";
     }
-    std::string output_path = "/Users/tobiaskohler/PhD/thesis/Simulations/tests/relaxation_steps/";
+    
+    std::cout << "Running relaxation test" << std::endl;
     
     std::string sigma_str = std::to_string((int)(sigma)) + "d";
     sigma_str += std::to_string((int)(sigma*10.0-(int)(sigma)*10));
@@ -147,31 +142,32 @@ void relaxation_test(double size, double sigma, int steps, bool APB){
     
     double center = size/2.0+0.5;
     double temp = 0.01;
-    Crystal crystal(struct_file, "None", -21.0,-8.6,-28.1,-106.28,3.2e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,sigma);
+  
+    Crystal crystal(struct_file, DipoleInteractions::kNoInteractions,
+                    ExchangeConstants(0.0,-8.6,-28.1,-106.28) ,3.25e-25,
+                    {0.0,0.0,-45.0}, 0.1, center,
+                    LatticeParameters(8.3965,8.3965,8.3965),sigma);
+    
     int numAtoms = (int)crystal.atoms.size();
    
-    for(int l=0; l<20; l++){
-        crystal.reset_structure();
-    std::ofstream relaxation;
-    std::string output_file = output_path+ "relaxation_D" + std::to_string((int)size) + "_" + std::to_string(steps)+ "steps_" + sigma_str + "_" +std::to_string(l) + A + ".txt";
-    relaxation.open(output_file, std::fstream::out);
+    for(int l=0; l<2; l++){
+        crystal.resetStructure();
+        std::ofstream relaxation;
+        std::string output_file = output_path+ "relaxation_D" + std::to_string((int)size) + "_" + std::to_string(steps)+ "steps_" + sigma_str + "_" +std::to_string(l) + A + ".txt";
+        relaxation.open(output_file, std::fstream::out);
     
-    relaxation << "# MCS       Total trial moves      Sx comp.     Sy comp.    Sz comp." << std::endl;
+        relaxation << "# MCS       Total trial moves      Sx comp.     Sy comp.    Sz comp." << std::endl;
     
-    for(int j=0; j<steps; j++){
-        for(int k=0; k<numAtoms; k++){
-            crystal.atoms[rand0_crystalAtoms((int)crystal.atoms.size())].MonteCarloStep(5.0,temp);
+        for(int j=0; j<steps; j++){
+            for(int k=0; k<numAtoms; k++){
+                crystal.atoms[rand0_crystalAtoms((int)crystal.atoms.size())].MonteCarloStep(5.0,temp);
+            }
+            LinalgVector sum{0.0,0.0,0.0};
+            for(int i =0; i<crystal.atoms.size(); i++){
+                sum += crystal.atoms[i].spinVector;
+            }
+            relaxation << j << " " << j*numAtoms << " " << sum.x <<" " << sum.y << " " << sum.z << std::endl;
         }
-        double sum_sx = 0.0;
-        double sum_sy = 0.0;
-        double sum_sz = 0.0;
-        for(int i =0; i<crystal.atoms.size(); i++){
-            sum_sx += crystal.atoms[i].spinx;
-            sum_sy += crystal.atoms[i].spiny;
-            sum_sz += crystal.atoms[i].spinz;
-        }
-        relaxation << j << " " << j*numAtoms << " " << sum_sx <<" " << sum_sy << " " << sum_sz << std::endl;
-    }
     }
 }
 
@@ -219,17 +215,18 @@ void sigma_tests(double sigma){
 
     sigma_test.open(outfile);
     std::string crystal_file = "/Users/tobiaskohler/PhD/thesis/Simulations/ZFC_tests/sigma_tests/D8_structure_noAPB_1";
-    Crystal crystal(crystal_file, "None",
-                    -21.0,-8.6,-28.1,-106.28,3.2e-25,0.0,0.0,-45.0, 0.1, 4.5,8.3965,8.3965,8.3965,sigma);
+    
+    Crystal crystal(crystal_file, DipoleInteractions::kNoInteractions,
+                    ExchangeConstants(-21.0,-8.6,-28.1,-106.28) ,3.25e-25,
+                    {0.0,0.0,-45.0}, 0.1, 4.5,
+                    LatticeParameters(8.3965,8.3965,8.3965),sigma);
   
-    double V[3];
+    LinalgVector oldSpin;
     
     for(int i=0; i< 10000; i++){
-        crystal.atoms[0].spinz = 1.0;
-        crystal.atoms[0].spiny = 0.0;
-        crystal.atoms[0].spinx = 0.0;
+        crystal.atoms[0].spinVector = {1.0, 0.0, 0.0};
         
-        crystal.atoms[0].angle(V);
-        sigma_test << crystal.atoms[0].spinx << " " << crystal.atoms[0].spiny << " " << crystal.atoms[0].spinz << std::endl;
+        crystal.atoms[0].angle(oldSpin);
+        sigma_test << crystal.atoms[0].spinVector.x << " " << crystal.atoms[0].spinVector.y << " " << crystal.atoms[0].spinVector.z << std::endl;
     }
 }
