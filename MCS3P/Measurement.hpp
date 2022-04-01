@@ -9,12 +9,13 @@
 #include "randNumGenerator.hpp"
 #include "omp.h"
 #include "ProgressBar.hpp"
+#include "HelperStructs.hpp"
 
 class MvsTMeasurement{
     // Class for M(T) simulations.
 public:
     // general settings
-    std::string dipoleInteractions;
+    DipoleInteractions dipoleInteractions;
     double steps;
     int averaging_steps;
     int numOrientations;
@@ -28,17 +29,9 @@ public:
     double TstepSize;
     
     // arrays to record the magnetization
-    std::vector<double> mxZFC; // Zero field cooled
-    std::vector<double> myZFC;
-    std::vector<double> mzZFC;
-    
-    std::vector<double> mxCFZ; // cooling zero field
-    std::vector<double> myCFZ;
-    std::vector<double> mzCFZ;
-    
-    std::vector<double> mxFC; // field cooled
-    std::vector<double> myFC;
-    std::vector<double> mzFC;
+    std::vector<LinalgVector> magnetizationZFC;
+    std::vector<LinalgVector> magnetizationCFZ;
+    std::vector<LinalgVector> magnetizationFC;
     
     // class initializer
     MvsTMeasurement(std::string dipoleInteractions, double steps,
@@ -60,7 +53,7 @@ class MvsBMeasurement{
     // Class for M(B) simulations.
 public:
     // general settings
-    std::string dipoleInteractions;
+    DipoleInteractions dipoleInteractions;
     int steps;
     int numOrientations;
     double temperature;
@@ -107,7 +100,7 @@ public:
     std::string output_dir;
     std::string structure_filename;
     
-    std::string dipoleInteractions;
+    DipoleInteractions dipoleInteractions;
     int steps;
     double magneticField;
     double temperature;
@@ -129,7 +122,7 @@ public:
 // wrapper function for M vs. B measurements
 void run_MvsB(std::string output_dir,
               std::string structure_filename,
-              std::string dipoleInteractions,
+              std::string dipoleInteractionsStr,
               int steps, int numOrientations,
               double temperature,
               double BUpperLimit, double BLowerLimit, double BstepSize,
@@ -145,7 +138,7 @@ void run_MvsB(std::string output_dir,
 // wrapper function for M vs. T measurements
 void run_MvsT(std::string output_dir,
               std::string structure_filename,
-              std::string dipoleInteractions,
+              std::string dipoleInteractionsStr,
               double steps, int averaging_steps,
               int numOrientations,
               double measurement_field, double cooling_field,
@@ -159,7 +152,7 @@ void run_MvsT(std::string output_dir,
               double sigma);
 
 // wrapper function for spin structure calculations
-void run_spinstructure(std::string dipoleInteractions,
+void run_spinstructure(std::string dipoleInteractionsStr,
                        int steps,
                        double magneticField,
                        double temperature,

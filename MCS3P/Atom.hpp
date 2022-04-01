@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cmath>
 #include "constants.h"
+#include "HelperStructs.hpp"
 #include "randNumGenerator.hpp"
 #include "omp.h"
 
@@ -30,7 +31,7 @@ public:
     
     Macrocell(double x,double y,double z);
     void update_total_moment();
-    void get_demag_field(double*, double);
+    void get_demag_field(LinalgVector&, double);
     void reset_total_moment();
 };
 
@@ -41,36 +42,24 @@ class Atom {
      other magnetic properties.
      */
 public:
-    double x = 0;   // atom coordinates
-    double y = 0;
-    double z = 0;
-    double spinx = 0; // spin components
-    double spiny = 0;
-    double spinz = 0;
-    double uc_x = 0.0; // unitCell_comp
-    double uc_y = 0.0;
-    double uc_z = 0.0;
-    
-    // exchange interaction constants
-    double FeTT = 0.0;
-    double FeOO = 0.0;
-    double FeTO = 0.0;
-    double FeOO_APB = 0.0;
-    
+    LinalgVector positionVector{0.0, 0.0, 0.0};
+    LinalgVector spinVector{0.0, 0.0, 0.0};
+    LinalgVector unitCellVector{0.0, 0.0, 0.0};
+    ExchangeConstants exchangeConstants{0.0, 0.0, 0.0, 0.0};
     double anisotropyConstant = 0.0;
    
-    int APB=0; // APB=1 --> APB position
-    int position = 0;// Octahedral = 0 or tetrahedral = 1 position
+    StructuralPositions structuralPositionID = StructuralPositions::kOctahedral;
+    DipoleInteractions dipoleInteractionHandling = DipoleInteractions::kNoInteractions;
+    
     bool isApbAtom = false;
     bool isSurfaceAtom = false;
-    int dipole_interactions; // 0 --> brute force, 1 --> macrocell method, 2 --> no dipole interactions
-    bool macrocell_method;
+    bool macrocell_method = false;
     
     double sigma = 0.0; // defines opening angle of Gaussian cone
     double MagMagMu0 = MAGFE3*MAGFE3*MU0;
     
-    Macrocell* macrocell_link = NULL;
-    double H_demag[3] = {0.0,0.0,0.0};
+    Macrocell* macrocell_link = nullptr;
+    LinalgVector H_demag = {0.0,0.0,0.0};
     
     // Arrays containing pointers to Atom objects needed for the calculations
     std::vector<Atom*> neighboursAntiparallel;
@@ -78,34 +67,31 @@ public:
     std::vector<Atom*> allOtherAtomsInCrystal;
     std::vector<double> inv_distances_cubed;
     std::vector<double> inv_distances_five;
-    std::vector<double> distVecX;
-    std::vector<double> distVecY;
-    std::vector<double> distVecZ;
+    std::vector<LinalgVector> distanceVectors;
     std::vector<double> magmag;
 
-    // initializer
-    Atom(int dipole_interactions,
-         double x, double y, double z,
-         int position, int APB,
-         double FeTT, double FeOO, double FeTO, double FeOO_APB,
+    Atom(DipoleInteractions dipoleInteractionHandling,
+         LinalgVector positionVector,
+         StructuralPositions structuralPositionID,
+         bool isAPB,
+         ExchangeConstants exchangeConstants,
          double anisotropyConstant);
     
     // energy functions
     double anisotropy();
     double exchange();
     double zeeman(double);
-    double zeeman3D(double*);
+    double zeeman3D(LinalgVector B);
     double dipole();
-    
     void dipole_field(double*);
     
     // trial move functions
-    void uniform(double *old_spin);
-    void uniform_ziggurat(double *old_spin);
-    void spin_flip(double*);
-    void angle(double *old_spin);
-    void hinzke_nowak(double *old_spin);
-    void cattaneo_sun(double *old_spin);
+    void uniform(LinalgVector& oldSpin);
+    void uniform_ziggurat(LinalgVector& oldSpin);
+    void spin_flip(LinalgVector& oldSpin);
+    void angle(LinalgVector& oldSpin);
+    void hinzke_nowak(LinalgVector& oldSpin);
+    void cattaneo_sun(LinalgVector& oldSpin);
     
     void MonteCarloStep(double Bx, double temperature);
 };

@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA3ED7C727DCDB44009E99A1 /* Parsers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */; };
 		FA6C69CE2634258F008BB914 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69CD2634258F008BB914 /* main.cpp */; };
-		FA6C69D726342698008BB914 /* libomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA6C69D626342698008BB914 /* libomp.dylib */; };
 		FA6C69DB26342787008BB914 /* Atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69DA26342787008BB914 /* Atom.cpp */; };
 		FA6C69E226342791008BB914 /* Crystal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E026342790008BB914 /* Crystal.cpp */; };
 		FA6C69E82634279A008BB914 /* randNumGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E52634279A008BB914 /* randNumGenerator.cpp */; };
 		FA6C69E92634279A008BB914 /* Measurement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E62634279A008BB914 /* Measurement.cpp */; };
+		FA6D78A427B154F0004DDDBC /* libomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA6C69D626342698008BB914 /* libomp.dylib */; };
 		FA79369F26890BE20087D45D /* testing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA79369D26890BE10087D45D /* testing.cpp */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parsers.cpp; sourceTree = "<group>"; };
+		FA3ED7C627DCDB44009E99A1 /* Parsers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parsers.hpp; sourceTree = "<group>"; };
 		FA6C69CA2634258F008BB914 /* MCS3P */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCS3P; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA6C69CD2634258F008BB914 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FA6C69D626342698008BB914 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../../../usr/local/Cellar/llvm/12.0.0/lib/libomp.dylib; sourceTree = "<group>"; };
@@ -43,6 +46,7 @@
 		FA6C69E52634279A008BB914 /* randNumGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = randNumGenerator.cpp; sourceTree = "<group>"; };
 		FA6C69E62634279A008BB914 /* Measurement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Measurement.cpp; sourceTree = "<group>"; };
 		FA6C69E72634279A008BB914 /* Measurement.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Measurement.hpp; sourceTree = "<group>"; };
+		FA6D78A527B15BCA004DDDBC /* HelperStructs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HelperStructs.hpp; sourceTree = "<group>"; };
 		FA79365D264D240F0087D45D /* ProgressBar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProgressBar.hpp; sourceTree = "<group>"; };
 		FA79369D26890BE10087D45D /* testing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = testing.cpp; sourceTree = "<group>"; };
 		FA79369E26890BE20087D45D /* testing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = testing.hpp; sourceTree = "<group>"; };
@@ -53,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA6C69D726342698008BB914 /* libomp.dylib in Frameworks */,
+				FA6D78A427B154F0004DDDBC /* libomp.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +90,7 @@
 				FA6C69DA26342787008BB914 /* Atom.cpp */,
 				FA6C69DF26342790008BB914 /* Crystal.hpp */,
 				FA6C69E026342790008BB914 /* Crystal.cpp */,
+				FA6D78A527B15BCA004DDDBC /* HelperStructs.hpp */,
 				FA6C69E72634279A008BB914 /* Measurement.hpp */,
 				FA6C69E62634279A008BB914 /* Measurement.cpp */,
 				FA6C69E42634279A008BB914 /* randNumGenerator.hpp */,
@@ -95,6 +100,8 @@
 				FA79365D264D240F0087D45D /* ProgressBar.hpp */,
 				FA79369D26890BE10087D45D /* testing.cpp */,
 				FA79369E26890BE20087D45D /* testing.hpp */,
+				FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */,
+				FA3ED7C627DCDB44009E99A1 /* Parsers.hpp */,
 			);
 			path = MCS3P;
 			sourceTree = "<group>";
@@ -133,7 +140,7 @@
 		FA6C69C22634258F008BB914 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					FA6C69C92634258F008BB914 = {
 						CreatedOnToolsVersion = 12.0.1;
@@ -165,6 +172,7 @@
 			files = (
 				FA6C69DB26342787008BB914 /* Atom.cpp in Sources */,
 				FA6C69E82634279A008BB914 /* randNumGenerator.cpp in Sources */,
+				FA3ED7C727DCDB44009E99A1 /* Parsers.cpp in Sources */,
 				FA79369F26890BE20087D45D /* testing.cpp in Sources */,
 				FA6C69E92634279A008BB914 /* Measurement.cpp in Sources */,
 				FA6C69E226342791008BB914 /* Crystal.cpp in Sources */,
@@ -290,17 +298,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CC = /usr/local/opt/llvm/bin/clang;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_ENTITLEMENTS = MCS3P/MCS3P.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = 6ZX92J8N23;
 				ENABLE_HARDENED_RUNTIME = YES;
+				EXCLUDED_ARCHS = arm64;
 				HEADER_SEARCH_PATHS = /usr/local/opt/llvm/lib/clang/12.0.0/include;
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/opt/llvm/lib,
 					/usr/local/Cellar/llvm/12.0.0/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
 				OTHER_CFLAGS = "-fopenmp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -310,17 +322,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CC = /usr/local/opt/llvm/bin/clang;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = NO;
 				CODE_SIGN_ENTITLEMENTS = MCS3P/MCS3P.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMPILER_INDEX_STORE_ENABLE = NO;
 				DEVELOPMENT_TEAM = 6ZX92J8N23;
 				ENABLE_HARDENED_RUNTIME = YES;
+				EXCLUDED_ARCHS = arm64;
 				HEADER_SEARCH_PATHS = /usr/local/opt/llvm/lib/clang/12.0.0/include;
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/opt/llvm/lib,
 					/usr/local/Cellar/llvm/12.0.0/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 12.2;
 				OTHER_CFLAGS = "-fopenmp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

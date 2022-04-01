@@ -1,28 +1,22 @@
 #include "Atom.hpp"
 
-Atom::Atom(int dipole_interactions,
-           double x, double y , double z,
-           int position, int APB,
-           double FeTT, double FeOO, double FeTO, double FeOO_APB,
+
+Atom::Atom(DipoleInteractions dipoleInteractionHandling,
+           LinalgVector positionVector,
+           StructuralPositions structuralPositionID,
+           bool isAPB,
+           ExchangeConstants exchangeConstants,
            double anisotropyConstant):
-           dipole_interactions(dipole_interactions),
-           x(x), y(y), z(z),
-           position(position), APB(APB),
-           FeTT(FeTT), FeOO(FeOO), FeTO(FeTO), FeOO_APB(FeOO_APB),
+           dipoleInteractionHandling(dipoleInteractionHandling),
+           positionVector(positionVector),
+           structuralPositionID(structuralPositionID),
+           isApbAtom(isAPB),
+           exchangeConstants(exchangeConstants),
            anisotropyConstant(anisotropyConstant){
     
-    if (APB == 1){
-        isApbAtom = true;
-    }
-    
-    /* when an atom object gets initialized, the spin vector is
-    set to a random orientation */
-    double s[3];
-    marsaglia(s);
-    spinx = s[0];
-    spiny = s[1];
-    spinz = s[2];
-    
+    LinalgVector randomSpin;
+    marsaglia(randomSpin);
+    spinVector = randomSpin;
 }
 
 double Atom::anisotropy() {
@@ -30,48 +24,40 @@ double Atom::anisotropy() {
        E_anis = -k/2 (S_x^4 + S_y^4 + S_z^4),
        where k is the anisotropy constant per magnetic moment.
      */
-    return -anisotropyConstant*0.5 * (spinx*spinx*spinx*spinx +
-                                      spiny*spiny*spiny*spiny +
-                                      spinz*spinz*spinz*spinz);
+    return -anisotropyConstant*0.5 * (spinVector.x*spinVector.x*spinVector.x*spinVector.x +
+                                      spinVector.y*spinVector.y*spinVector.y*spinVector.y +
+                                      spinVector.z*spinVector.z*spinVector.z*spinVector.z);
 }
 
 double Atom::exchange() {
-    double Enna = 0.0;
-    double Ennp = 0.0;
+    double energyNearestNeighboursAntiparallel = 0.0;
+    double energyNearestNeighboursParallel = 0.0;
     
     for(unsigned int i = 0; i < neighboursParallel.size(); i++){
         if((neighboursParallel[i]->isApbAtom == true) && (isApbAtom == true)){
-            Ennp += -FeOO_APB *(neighboursParallel[i]->spinx * spinx +
-                                neighboursParallel[i]->spiny * spiny +
-                                neighboursParallel[i]->spinz * spinz);
+            energyNearestNeighboursParallel += -exchangeConstants.FeOO_APB * (neighboursParallel[i]->spinVector.dot(spinVector));
         }
         
-        else if(position == 0){
-            Ennp += -FeOO  *(neighboursParallel[i]->spinx * spinx +
-                             neighboursParallel[i]->spiny * spiny +
-                             neighboursParallel[i]->spinz * spinz);
+        else if(structuralPositionID == StructuralPositions::kOctahedral){
+            energyNearestNeighboursParallel += -exchangeConstants.FeOO  * (neighboursParallel[i]->spinVector.dot(spinVector));
         }
-        else if(position == 1){
-            Ennp += -FeTT * (neighboursParallel[i]->spinx * spinx +
-                             neighboursParallel[i]->spiny * spiny +
-                             neighboursParallel[i]->spinz * spinz);
+        else if(structuralPositionID == StructuralPositions::kTetrahedral){
+            energyNearestNeighboursParallel += -exchangeConstants.FeTT * (neighboursParallel[i]->spinVector.dot(spinVector));
         }
 
     }
     for(unsigned int i = 0; i < neighboursAntiparallel.size(); i++){
-        Enna += -FeTO * (neighboursAntiparallel[i]->spinx * spinx +
-                         neighboursAntiparallel[i]->spiny * spiny +
-                         neighboursAntiparallel[i]->spinz * spinz);
+        energyNearestNeighboursAntiparallel += -exchangeConstants.FeTO * (neighboursAntiparallel[i]->spinVector.dot(spinVector));
     }
-    return((Enna + Ennp)*KB);
+    return((energyNearestNeighboursAntiparallel + energyNearestNeighboursParallel)*KB);
 }
 
 double Atom::zeeman(double Bx) {
-    return (-Bx * spinx * MAGFE3);
+    return (-Bx * spinVector.x * MAGFE3);
 }
 
-double Atom::zeeman3D(double *B) {
-    return (-B[0] * spinx * MAGFE3 + -B[1] * spiny * MAGFE3 + -B[2] * spinz * MAGFE3);
+double Atom::zeeman3D(LinalgVector B) {
+    return ((B*-1.0).dot(spinVector) * MAGFE3);
 }
 
 void Atom::dipole_field(double *H_dip){
@@ -83,15 +69,13 @@ void Atom::dipole_field(double *H_dip){
     double Bx, By, Bz;
     
     for(int i=0; i<(int)inv_distances_cubed.size(); i++){
-        A = allOtherAtomsInCrystal[i]->spinx * distVecX[i] +
-            allOtherAtomsInCrystal[i]->spiny * distVecY[i] +
-            allOtherAtomsInCrystal[i]->spinz * distVecZ[i];
-        Bx = allOtherAtomsInCrystal[i]->spinx * inv_distances_cubed[i];
-        By = allOtherAtomsInCrystal[i]->spiny * inv_distances_cubed[i];
-        Bz = allOtherAtomsInCrystal[i]->spinz * inv_distances_cubed[i];
-        Ax = 3.0 * A * distVecX[i] * inv_distances_five[i];
-        Ay = 3.0 * A * distVecY[i] * inv_distances_five[i];
-        Az = 3.0 * A * distVecZ[i] * inv_distances_five[i];
+        A = allOtherAtomsInCrystal[i]->spinVector.dot(distanceVectors[i]);
+        Bx = allOtherAtomsInCrystal[i]->spinVector.x * inv_distances_cubed[i];
+        By = allOtherAtomsInCrystal[i]->spinVector.y * inv_distances_cubed[i];
+        Bz = allOtherAtomsInCrystal[i]->spinVector.z * inv_distances_cubed[i];
+        Ax = 3.0 * A * distanceVectors[i].x * inv_distances_five[i];
+        Ay = 3.0 * A * distanceVectors[i].y * inv_distances_five[i];
+        Az = 3.0 * A * distanceVectors[i].z * inv_distances_five[i];
             
         H_dip[0] += Ax - Bx;
         H_dip[1] += Ay - By;
@@ -118,15 +102,9 @@ double Atom::dipole(){
              same order as the distances are stored in distances, dereferencing the addresses by "->" gives
              access to the spin porperties of these atoms spinx, spiny, spinz refer to the spin properties
              of the current atom object */
-            
-            double dotProd = spinx * allOtherAtomsInCrystal[i]->spinx +
-                             spiny * allOtherAtomsInCrystal[i]->spiny +
-                             spinz * allOtherAtomsInCrystal[i]->spinz;
-            double m1r = spinx * distVecX[i] + spiny * distVecY[i] + spinz * distVecZ[i];
-            double m2r = allOtherAtomsInCrystal[i]->spinx * distVecX[i] +
-                         allOtherAtomsInCrystal[i]->spiny * distVecY[i] +
-                         allOtherAtomsInCrystal[i]->spinz * distVecZ[i];
-            
+            double dotProd = spinVector.dot(allOtherAtomsInCrystal[i]->spinVector);
+            double m1r = spinVector.dot(distanceVectors[i]);
+            double m2r = allOtherAtomsInCrystal[i]->spinVector.dot(distanceVectors[i]);
             /* constants are precomputed and pulled out of the for loop to increase speed:
              (5uB^2*u0=2.7019978...e-51)/(...distances_cubed*1e-30) */
             E_d += inv_distances_cubed[i]*((3.0*m1r*m2r)-dotProd);
@@ -137,78 +115,54 @@ double Atom::dipole(){
     return -2.150181574480756e-22*E_d;
 }
 
-void Atom::angle(double *old_spin){
-    old_spin[0] = spinx;
-    old_spin[1] = spiny;
-    old_spin[2] = spinz;
-    spinx += gaussian_ziggurat()*sigma;
-    spiny += gaussian_ziggurat()*sigma;
-    spinz += gaussian_ziggurat()*sigma;
-    double vectorLength = 1.0/std::sqrt(spinx*spinx+spiny*spiny+spinz*spinz);
-    spinx *= vectorLength;
-    spiny *= vectorLength;
-    spinz *= vectorLength;
+void Atom::angle(LinalgVector& oldSpin){
+    oldSpin = spinVector;
+    spinVector.x += gaussian_ziggurat()*sigma;
+    spinVector.y += gaussian_ziggurat()*sigma;
+    spinVector.z += gaussian_ziggurat()*sigma;
+    spinVector.normalize();
 }
 
-void Atom::uniform_ziggurat(double *old_spin){
-    old_spin[0] = spinx;
-    old_spin[1] = spiny;
-    old_spin[2] = spinz;
-    spinx = gaussian_ziggurat();
-    spiny = gaussian_ziggurat();
-    spinz = gaussian_ziggurat();
+void Atom::uniform_ziggurat(LinalgVector& oldSpin){
+    oldSpin = spinVector;
+    spinVector = {gaussian_ziggurat(), gaussian_ziggurat(), gaussian_ziggurat()};
 }
 
-void Atom::uniform(double *old_spin){
-    old_spin[0] = spinx;
-    old_spin[1] = spiny;
-    old_spin[2] = spinz;
-    double spinRotationVector[3];
+void Atom::uniform(LinalgVector& oldSpin){
+    oldSpin = spinVector;
+    LinalgVector spinRotationVector{0.0, 0.0, 0.0};
     marsaglia(spinRotationVector);
-    spinx = spinRotationVector[0];
-    spiny = spinRotationVector[1];
-    spinz = spinRotationVector[2];
+    spinVector = spinRotationVector;
 }
 
-void Atom::spin_flip(double* old_spin){
-    old_spin[0] = spinx;
-    old_spin[1] = spiny;
-    old_spin[2] = spinz;
-    spinx = -spinx;
-    spiny = -spiny;
-    spinz = -spinz;
+void Atom::spin_flip(LinalgVector& oldSpin){
+    oldSpin = spinVector;
+    spinVector = spinVector * -1;
 }
 
-void Atom::cattaneo_sun(double *old_spin){
-    old_spin[0] = spinx;
-    old_spin[1] = spiny;
-    old_spin[2] = spinz;
-    double spinRotationVector[3];
+void Atom::cattaneo_sun(LinalgVector& oldSpin){
+    oldSpin = spinVector;
+    LinalgVector spinRotationVector{0.0, 0.0, 0.0};
     marsaglia(spinRotationVector);
-    spinx += (testRotationVectorLength * spinRotationVector[0]);
-    spiny += (testRotationVectorLength * spinRotationVector[1]);
-    spinz += (testRotationVectorLength * spinRotationVector[2]);
-    double vectorLength = 1.0/std::sqrt(spinx*spinx+spiny*spiny+spinz*spinz);
-    spinx *= vectorLength;
-    spiny *= vectorLength;
-    spinz *= vectorLength;
+    spinVector += (spinRotationVector * testRotationVectorLength);
+    spinVector.normalize();
 }
 
-void Atom::hinzke_nowak(double *old_spin){
+void Atom::hinzke_nowak(LinalgVector& oldSpin){
     const int pick_move=int(3.0*rand0_1());
     
     switch(pick_move){
         case 0:
-            spin_flip(old_spin);
+            spin_flip(oldSpin);
             break;
         case 1:
-            uniform(old_spin);
+            uniform(oldSpin);
             break;
         case 2:
-            angle(old_spin);
+            angle(oldSpin);
             break;
         default:
-            angle(old_spin);
+            angle(oldSpin);
             break;
     }
 }
@@ -222,11 +176,10 @@ void Atom::MonteCarloStep(double Bx, double temperature){
     double Ed = 0.0;
     double E0 = 0.0;
     double E1 = 0.0;
-    double tempSpinVector[3];
+    LinalgVector tempSpinVector{0.0, 0.0, 0.0};
     
-    switch(dipole_interactions){
-        case 0:
-            // brute force
+    switch(dipoleInteractionHandling){
+        case DipoleInteractions::kBruteForce:
             Ea = anisotropy();
             Ee = exchange();
             Ez = zeeman(Bx);
@@ -243,14 +196,11 @@ void Atom::MonteCarloStep(double Bx, double temperature){
             
             if(E1 > E0){
                 if(rand0_1() > std::exp((E0-E1)/(KB*temperature))){
-                    spinx = tempSpinVector[0];
-                    spiny = tempSpinVector[1];
-                    spinz = tempSpinVector[2];
+                    spinVector = tempSpinVector;
                 }
             }
             break;
-        case 1:
-            // macrocell method
+        case DipoleInteractions::kMacrocellMethod:
             macrocell_link->get_demag_field(H_demag,Bx);
           
             Ea = anisotropy();
@@ -271,21 +221,16 @@ void Atom::MonteCarloStep(double Bx, double temperature){
             if(E1 > E0){
                 if(rand0_1() > std::exp((E0-E1)/(KB*temperature))){
                     macrocell_link->reset_total_moment();
-                    
-                    spinx = tempSpinVector[0];
-                    spiny = tempSpinVector[1];
-                    spinz = tempSpinVector[2];
+                    spinVector = tempSpinVector;
                 }
             }
             break;
-        default:
-            // no dipole interactions
+        case DipoleInteractions::kNoInteractions:
             Ea = anisotropy();
             Ee = exchange();
             Ez = zeeman(Bx);
             E0 = Ez + Ea + Ee;
             
-            //cattaneo_sun(tempSpinVector);
             hinzke_nowak(tempSpinVector);
             
             Ea = anisotropy();
@@ -299,9 +244,7 @@ void Atom::MonteCarloStep(double Bx, double temperature){
                 // Boltzmann factor. For low temperatures this is almost
                 // always the case.
                 if(rand0_1() > std::exp((E0-E1)/(KB*temperature))){
-                    spinx = tempSpinVector[0];
-                    spiny = tempSpinVector[1];
-                    spinz = tempSpinVector[2];
+                    spinVector = tempSpinVector;
                 }
             }
     }
@@ -319,9 +262,9 @@ void Macrocell::update_total_moment(){
     total_moment[1] = 0.0;
     total_moment[2] = 0.0;
     for(int i=0; i<macrocell_atoms.size(); i++){
-        total_moment[0] += macrocell_atoms[i]->spinx*MAGFE3;
-        total_moment[1] += macrocell_atoms[i]->spiny*MAGFE3;
-        total_moment[2] += macrocell_atoms[i]->spinz*MAGFE3;
+        total_moment[0] += macrocell_atoms[i]->spinVector.x*MAGFE3;
+        total_moment[1] += macrocell_atoms[i]->spinVector.y*MAGFE3;
+        total_moment[2] += macrocell_atoms[i]->spinVector.z*MAGFE3;
     }
 }
 
@@ -332,7 +275,7 @@ void Macrocell::reset_total_moment(){
     
 }
 
-void Macrocell::get_demag_field(double *H_demag, double Bx){
+void Macrocell::get_demag_field(LinalgVector& H_demag, double Bx){
     
     double Hd_x = 0.0;
     double Hd_y = 0.0;
@@ -356,7 +299,7 @@ void Macrocell::get_demag_field(double *H_demag, double Bx){
     Hd_y *=f1;
     Hd_z *=f1;
     
-    H_demag[0] = Bx + (Hd_x - MU0/3.0*total_moment[0]*inv_effective_volume);
-    H_demag[1] =(Hd_y - MU0/3.0*total_moment[1]*inv_effective_volume);
-    H_demag[2] =(Hd_z - MU0/3.0*total_moment[2]*inv_effective_volume);
+    H_demag.x = Bx + (Hd_x - MU0/3.0*total_moment[0]*inv_effective_volume);
+    H_demag.y =(Hd_y - MU0/3.0*total_moment[1]*inv_effective_volume);
+    H_demag.z =(Hd_z - MU0/3.0*total_moment[2]*inv_effective_volume);
 }
