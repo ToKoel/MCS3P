@@ -533,41 +533,6 @@ class Crystal():
         
         data = np.column_stack((x,y,z,position,isAPB,unit_cell))     
         np.savetxt(filename, data, fmt='%.5f')
-     
-        
-        # x = []
-        # y = []
-        # z = []
-        # t = []
-        # ucn = []
-        # isAPB = []
-        
-        # for i in self.atoms:
-        #     if i.element == "Fe":
-        #         x.append(i.coordinates[0])
-        #         y.append(i.coordinates[1])
-        #         z.append(i.coordinates[2])
-        #         # TODO: need a better way to check for tetrahedral positions
-        #         if (i.label == "Fe(tet)") or (i.label == "Fe1"):
-        #             t.append(1)
-        #         else:
-        #             t.append(0)
-        #         isAPB.append(i.isAPB)
-        #         ucn.append(i.ucn)
-        
-        # if oxygen:
-        #     for i in self.atoms:
-        #         if i.element == "O":
-        #             x.append(i.coordinates[0])
-        #             y.append(i.coordinates[1])
-        #             z.append(i.coordinates[2])
-        #             t.append(2)
-        #             isAPB.append(0)
-        #             ucn.append(i.ucn)
-            
-        # data = np.column_stack((x,y,z,t,isAPB,ucn))     
-        # np.savetxt(filename, data, fmt='%.5f')
-
 
     def rotate(self,alpha,beta,gamma):
         """ Rotate the crystal. """
@@ -593,6 +558,4 @@ class Crystal():
             atom.coordinates = rotation_y.dot(atom.coordinates)
             atom.coordinates = rotation_z.dot(atom.coordinates)
             atom.coordinates += self.radius
-            
- 
-        
+  

@@ -54,18 +54,16 @@ class CifParser():
         self.lattice_b = 0.0
         self.lattice_c = 0.0
         
-        
-        
         for n,line in enumerate(lines):
             if "cell_length_a" in line:
                 self.lattice_a = float(line.split()[1])
-            if "cell_length_b" in line:
+            else if "cell_length_b" in line:
                 self.lattice_b = float(line.split()[1])
-            if "cell_length_c" in line:
+            else if "cell_length_c" in line:
                 self.lattice_c = float(line.split()[1])            
-            if "space_group_name" in line:
+            else if "space_group_name" in line:
                 self.spcgr = line.split()[1]
-            if line == "\n":
+            else if line == "\n":
                 space.append(n)
                 
         for line in lines[space[2]+3:space[3]]:
@@ -73,24 +71,19 @@ class CifParser():
             l = l[1:-1]
             symmetry_elements.append(l)
             
-            
         for line in lines[space[3]+10:]:
             unitcell.append(line.split())
-            
             
         for i in unitcell:
             coordinatelist.append([float(i[2]),float(i[3]),float(i[4])])
             elementlist.append(i[-1])
             labels.append(i[0])
-            
-        
-            ex_test = []
+
         for k,i in enumerate(coordinatelist):
             for n in symmetry_elements:
                 x = i[0]
                 y = i[1]
                 z = i[2]
-                
                 
                 # calculate symmetry equivalent positions
                 symm = n.split(',')
@@ -104,7 +97,6 @@ class CifParser():
                     new_y = 1+new_y
                 if new_z < 0:
                     new_z = 1+new_z
-                    
                     
                 if new_x == -0.0:
                     new_x = 0.0
@@ -144,10 +136,4 @@ class CifParser():
                     print("duplicate at %d, %d"% (n,k))
                     print(i, l)
         
-        print("\nCif import succesful\n")      
-
-            
-
-
-               
-    
+        print("\nCif import succesful\n")

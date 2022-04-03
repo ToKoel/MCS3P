@@ -1,54 +1,33 @@
-//
-//  Crystal2.cpp
-//  MCS2
-//
-//  Created by Tobias Köhler on 06.01.21.
-//  Copyright © 2021 Tobias Köhler. All rights reserved.
-//
-
 #include "Crystal.hpp"
 
 
-Crystal::Crystal(std::string filename, DipoleInteractions dipoleInteractions,
-                 ExchangeConstants exchangeConstants,
-                 double anisotropyConstant,
-                 LinalgVector angles,
-                 double macrocell_size, double center,
-                 LatticeParameters lattice_pars, double sigma):
-                 lattice_pars(lattice_pars), center(center){
-                     
-                     
-                     initializeStructureFromFile(filename, dipoleInteractions, exchangeConstants, anisotropyConstant);
-                     setSigma(sigma);
-                     rotateCrystal(angles, center);
-                     generateNeighbourLists();
+Crystal::Crystal(MeasurementSettings measurementSettings): measurementSettings(measurementSettings){
+    initializeStructureFromFile();
+    setSigma();
+    rotateCrystal();
+    generateNeighbourLists();
 
-                     switch(dipoleInteractions){
-                         case DipoleInteractions::kBruteForce:
-                             generateDipoleLists();
-                             break;
-                         case DipoleInteractions::kMacrocellMethod:
-                             generateMacrocells(macrocell_size);
-                             break;
-                         case DipoleInteractions::kNoInteractions:
-                             break;
-                     }
+    switch(measurementSettings.dipoleInteractionHandling){
+        case DipoleInteractions::kBruteForce:
+            generateDipoleLists();
+            break;
+        case DipoleInteractions::kMacrocellMethod:
+            generateMacrocells();
+            break;
+        case DipoleInteractions::kNoInteractions:
+            break;
+    }
 }
 
-void Crystal::initializeStructureFromFile(std::string filename,
-                                       DipoleInteractions dipoleInteractions,
-                                       ExchangeConstants exchange_constants,
-                                       double anisotropyConstant){
-    StructureFileParser parser(filename);
-    StructureProperties structureProperties = parser.parseStructureFile();
-    
-    for(int i=0; i<structureProperties.numberOfAtoms; i++){
-        atoms.push_back(Atom(dipoleInteractions,
+void Crystal::initializeStructureFromFile(){
+    StructureProperties structureProperties = StructureFileParser::parseStructureFile(measurementSettings.structurePath);
+    //atoms.resize(structureProperties.numberOfAtoms);
+    for(auto i=0; i<structureProperties.numberOfAtoms; i++){
+        atoms.push_back( Atom(measurementSettings,
                              structureProperties.positionVectors[i],
                              structureProperties.positionIDs[i],
-                             structureProperties.isAPB[i],
-                             exchange_constants,
-                             anisotropyConstant));
+                             structureProperties.isAPB[i])
+                        );
     }
 }
 
@@ -80,9 +59,9 @@ void Crystal::generateDipoleLists(){
     double distance;
     double rx, ry, rz;
     
-    a_sq = lattice_pars.a*lattice_pars.a;
-    b_sq = lattice_pars.b*lattice_pars.b;
-    c_sq = lattice_pars.c*lattice_pars.c;
+    a_sq = measurementSettings.latticeParameters.a*measurementSettings.latticeParameters.a;
+    b_sq = measurementSettings.latticeParameters.b*measurementSettings.latticeParameters.b;
+    c_sq = measurementSettings.latticeParameters.c*measurementSettings.latticeParameters.c;
     
     for(unsigned int i=0; i< atoms.size(); i++){
         x = atoms[i].positionVector.x;
@@ -95,9 +74,9 @@ void Crystal::generateDipoleLists(){
                                      (atoms[j].positionVector.z - z)*(atoms[j].positionVector.z - z)*c_sq);
 
                 //unit vectors
-                rx = (atoms[j].positionVector.x - x)*lattice_pars.a/distance;
-                ry = (atoms[j].positionVector.y - y)*lattice_pars.b/distance;
-                rz = (atoms[j].positionVector.z - z)*lattice_pars.c/distance;
+                rx = (atoms[j].positionVector.x - x)*measurementSettings.latticeParameters.a/distance;
+                ry = (atoms[j].positionVector.y - y)*measurementSettings.latticeParameters.b/distance;
+                rz = (atoms[j].positionVector.z - z)*measurementSettings.latticeParameters.c/distance;
 
                 atoms[i].inv_distances_cubed.push_back(1.0/(std::pow((distance),3)));
                 atoms[i].inv_distances_five.push_back(1.0/(std::pow((distance),5)));
@@ -144,7 +123,7 @@ void Crystal::structureSnapshot(std::string filename){
     structure.close();
 }
 
-void Crystal::generateMacrocells(double macrocell_size){
+void Crystal::generateMacrocells(){
     
     // find minimum position
     double x_min=atoms[0].positionVector.x, y_min=atoms[0].positionVector.y, z_min=atoms[0].positionVector.z;
@@ -175,7 +154,7 @@ void Crystal::generateMacrocells(double macrocell_size){
     
     // determine number of macrocells needed
     int num_macrocells = 5;
-    while(num_macrocells*macrocell_size <= x_max+0.2){
+    while(num_macrocells*measurementSettings.macrocellSize <= x_max+0.2){
         num_macrocells++;
     }
     
@@ -183,16 +162,16 @@ void Crystal::generateMacrocells(double macrocell_size){
     for(int i=0; i<num_macrocells; i++){
         for(int j=0; j<num_macrocells; j++){
             for(int k=0; k<num_macrocells; k++){
-                Macrocell macrocell(macrocell_size/2.0+(double)i*macrocell_size,
-                                    macrocell_size/2.0+(double)j*macrocell_size,
-                                    macrocell_size/2.0+(double)k*macrocell_size);
+                Macrocell macrocell(measurementSettings.macrocellSize/2.0+(double)i*measurementSettings.macrocellSize,
+                                    measurementSettings.macrocellSize/2.0+(double)j*measurementSettings.macrocellSize,
+                                    measurementSettings.macrocellSize/2.0+(double)k*measurementSettings.macrocellSize);
                 macrocells.push_back(macrocell);
             }
         }
     }
 
     // assign atoms to macrocells
-    double w = macrocell_size/2.0;
+    double w = measurementSettings.macrocellSize/2.0;
     for(int j=0; j<atoms.size(); j++){
         for(int i=0; i<macrocells.size(); i++){
             if(atoms[j].positionVector.x < macrocells[i].center_x+w and atoms[j].positionVector.x >= macrocells[i].center_x-w
@@ -298,22 +277,29 @@ void Crystal::resetStructure(){
     }
 }
 
-void Crystal::setSigma(double sigma){
+void Crystal::setSigma(){
     for(int i=0; i< atoms.size(); i++){
-        atoms[i].sigma = sigma;
+        atoms[i].sigma = measurementSettings.sigma;
     }
 }
 
-void Crystal::rotateCrystal(LinalgVector angles, double center){
+void Crystal::rotateCrystal(){
     for(auto i=0; i<atoms.size(); ++i){
-        atoms[i].positionVector.rotate(angles.x, angles.y, angles.z, center);
+        atoms[i].positionVector.rotate(measurementSettings.angles.alpha,
+                                       measurementSettings.angles.beta,
+                                       measurementSettings.angles.gamma,
+                                       measurementSettings.particleCenter);
     }
+}
+
+int Crystal::getNumberOfAtoms(){
+    return static_cast<int>(atoms.size());
 }
 
 void Crystal::randomOrientation(){
     LinalgVector angles;
     rand0_360(angles);
-    rotateCrystal(angles, center);
+    rotateCrystal();
 }
 
 void Crystal::alignAlongRandomVector(){
@@ -328,5 +314,19 @@ void Crystal::alignAlongRandomVector(){
             
         }
     }
+}
+
+void Crystal::performMonteCarloSteps(int numberOfSteps, double measurementField, double temperature){
+    for(auto i = 0; i<static_cast<int>(numberOfSteps*atoms.size()); ++i){
+        atoms[rand0_crystalAtoms(static_cast<int>(atoms.size()))].MonteCarloStep(measurementField, temperature);
+    }
+}
+
+LinalgVector Crystal::getNetSpinVector(){
+    LinalgVector netVector{0.0, 0.0, 0.0};
+    for(auto atom: atoms){
+        netVector += atom.spinVector * MAGFE3;
+    }
+    return netVector;
 }
 

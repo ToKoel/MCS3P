@@ -1,19 +1,15 @@
 #include "Atom.hpp"
 
-
-Atom::Atom(DipoleInteractions dipoleInteractionHandling,
+Atom::Atom(MeasurementSettings measurementSettings,
            LinalgVector positionVector,
            StructuralPositions structuralPositionID,
-           bool isAPB,
-           ExchangeConstants exchangeConstants,
-           double anisotropyConstant):
-           dipoleInteractionHandling(dipoleInteractionHandling),
+           bool isAPB):
+           dipoleInteractionHandling(measurementSettings.dipoleInteractionHandling),
+           exchangeConstants(measurementSettings.exchangeConstants),
+           anisotropyConstant(measurementSettings.anisotropyConstant),
            positionVector(positionVector),
            structuralPositionID(structuralPositionID),
-           isApbAtom(isAPB),
-           exchangeConstants(exchangeConstants),
-           anisotropyConstant(anisotropyConstant){
-    
+           isApbAtom(isAPB){
     LinalgVector randomSpin;
     marsaglia(randomSpin);
     spinVector = randomSpin;

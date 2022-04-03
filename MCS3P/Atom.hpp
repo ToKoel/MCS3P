@@ -70,12 +70,10 @@ public:
     std::vector<LinalgVector> distanceVectors;
     std::vector<double> magmag;
 
-    Atom(DipoleInteractions dipoleInteractionHandling,
-         LinalgVector positionVector,
-         StructuralPositions structuralPositionID,
-         bool isAPB,
-         ExchangeConstants exchangeConstants,
-         double anisotropyConstant);
+    Atom(MeasurementSettings,
+         LinalgVector,
+         StructuralPositions,
+         bool);
     
     // energy functions
     double anisotropy();

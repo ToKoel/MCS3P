@@ -2,170 +2,34 @@
 #define Measurement_hpp
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <vector>
 #include <string>
-#include "Crystal.hpp"
-#include "randNumGenerator.hpp"
-#include "omp.h"
 #include "ProgressBar.hpp"
-#include "HelperStructs.hpp"
+#include "Crystal.hpp"
 
-class MvsTMeasurement{
-    // Class for M(T) simulations.
-public:
-    // general settings
-    DipoleInteractions dipoleInteractions;
-    double steps;
-    int averaging_steps;
-    int numOrientations;
-    double measurement_field;
-    double cooling_field;
-    double macrocell_size;
 
-    // temperature sweep settings
-    double TUpperLimit;
-    double TLowerLimit;
-    double TstepSize;
-    
-    // arrays to record the magnetization
-    std::vector<LinalgVector> magnetizationZFC;
-    std::vector<LinalgVector> magnetizationCFZ;
-    std::vector<LinalgVector> magnetizationFC;
-    
-    // class initializer
-    MvsTMeasurement(std::string dipoleInteractions, double steps,
-                    int averaging_steps, int numOrientations,
-                    double measurement_field, double cooling_field,
-                    double TUpperLimit, double TLowerLimit,
-                    double TstepSize, double macrocell_size);
-    
-    // function to run the simulation
-    void temperatureSweep(std::string output_dir, std::string structure_filename,
-                          double FeTT, double FeOO, double FeTO, double FeOO_APB,
-                          double anisotropyConstant,bool ZFC, bool FC, double center,
-                          double lattice_a, double lattice_b, double lattice_c,
-                          double sigma);
+enum class MeasurementMode{
+    ZFC,
+    FC,
+    Field
 };
 
-
-class MvsBMeasurement{
-    // Class for M(B) simulations.
+class Measurement{
 public:
-    // general settings
-    DipoleInteractions dipoleInteractions;
-    int steps;
-    int numOrientations;
-    double temperature;
-    double macrocell_size;
+    MeasurementSettings measurementSettings;
+    Measurement(MeasurementSettings measurementSettings): measurementSettings(measurementSettings) {};
+    void run_MvsT();
+    void run_MvsB();
+    void run_spinstructure();
     
-    // cooling setup
-    double startTemp;
-    double tempStep;
-    double coolingField;
-    int coolingSteps;
-    
-    // field sweep settings
-    int BnumberOfSteps;
-    double BUpperLimit;
-    double BLowerLimit;
-    double BstepSize;
-    std::vector<double> magneticField;
-    
-    // MvsB arrays for the x, y and z components
-    std::vector<double> mX;
-    std::vector<double> mY;
-    std::vector<double> mZ;
-    
-    // class initializer
-    MvsBMeasurement(std::string dipoleInteractions,
-                    int steps, int numOrientations,
-                    double temperature, double BUpperLimit,
-                    double BLowerLimit, double BstepSize,
-                    double startTemp, double tempStep,
-                    double coolingField, int coolingSteps,
-                    double macrocell_size);
-    
-    // function to run the simulation
-    void fieldSweep(std::string output_dir, std::string structure_filename,
-                    double FeTT, double FeOO, double FeTO, double FeOO_APB,
-                    double anisotropyConstant,
-                    double lattice_a, double lattice_b, double lattice_c,
-                    double center, double sigma);
+    std::string generateOutputHeader();
+    std::string generateOutputFilename();
+    void temperatureSweep(Crystal& crystal, std::vector<double>& temperatureArray, std::vector<LinalgVector>& magnetizationArray);
+    void fieldSweep(Crystal& crystal, std::vector<double>& temperatureArray, std::vector<double>& fieldArray, std::vector<LinalgVector>& magnetizationArray);
+    void writeSweepResultsToFile(MeasurementMode mode, std::vector<double>& temperatureArray, std::vector<LinalgVector>& magnetizationArray);
+    void writeSpinStructureResultsToFile(Crystal& crystal);
 };
-
-class spinStructure{
-    // Class for spin structure simulations
-public:
-    std::string output_dir;
-    std::string structure_filename;
-    
-    DipoleInteractions dipoleInteractions;
-    int steps;
-    double magneticField;
-    double temperature;
-    double macrocell_size;
-    
-    spinStructure(std::string dipoleInteractions,
-                  int steps, double magneticField,
-                  double temperature, double macrocell_size,
-                  std::string output_dir, std::string structure_filename);
-    
-    void spinStructureMeasurement(double FeTT,double FeOO, double FeTO, double FeOO_APB,
-                                  double anisotropyConstant,
-                                  double alpha, double beta, double gamma,
-                                  double center,
-                                  double lattice_a, double lattice_b, double lattice_c,
-                                  double sigma);
-};
-
-// wrapper function for M vs. B measurements
-void run_MvsB(std::string output_dir,
-              std::string structure_filename,
-              std::string dipoleInteractionsStr,
-              int steps, int numOrientations,
-              double temperature,
-              double BUpperLimit, double BLowerLimit, double BstepSize,
-              double coolingField, int coolingSteps,
-              double startTemp, double tempStep,
-              double FeTT, double FeOO, double FeTO, double FeOO_APB,
-              double anisotropyConstant,
-              double macrocell_size,
-              double center,
-              double lattice_a, double lattice_b, double lattice_c,
-              double sigma);
-
-// wrapper function for M vs. T measurements
-void run_MvsT(std::string output_dir,
-              std::string structure_filename,
-              std::string dipoleInteractionsStr,
-              double steps, int averaging_steps,
-              int numOrientations,
-              double measurement_field, double cooling_field,
-              double TUpperLimit, double TLowerLimit, double TstepSize,
-              double FeTT, double FeOO, double FeTO, double FeOO_APB,
-              double anisotropyConstant,
-              bool ZFC, bool FC,
-              double macrocell_size,
-              double center,
-              double lattice_a, double lattice_b, double lattice_c,
-              double sigma);
-
-// wrapper function for spin structure calculations
-void run_spinstructure(std::string dipoleInteractionsStr,
-                       int steps,
-                       double magneticField,
-                       double temperature,
-                       std::string output_dir,
-                       std::string structure_filename,
-                       double FeTT,double FeOO, double FeTO, double FeOO_APB,
-                       double anisotropyConstant,
-                       double alpha,double beta, double gamma ,
-                       double macrocell_size,
-                       double center,
-                       double lattice_a, double lattice_b, double lattice_c,
-                       double sigma);
-
-
 
 #endif /* Measurement_hpp */

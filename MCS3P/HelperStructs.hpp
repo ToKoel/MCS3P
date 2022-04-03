@@ -15,6 +15,14 @@
 #include "constants.h"
 #include <type_traits>
 
+enum class MeasurementType {
+    kNone,
+    kMvsT,
+    kMvsH,
+    kSpinStructure,
+    kTest
+};
+
 enum class DipoleInteractions{ kNoInteractions=0, kBruteForce, kMacrocellMethod };
 static std::vector<std::string> DipoleInteractionTypes =
 {
@@ -35,56 +43,47 @@ struct ExchangeConstants{
     double FeOO = 0.0;
     double FeTO = 0.0;
     double FeOO_APB = 0.0;
-    
-    ExchangeConstants(double TT, double OO, double TO, double OO_APB):
-                    FeTT(TT), FeOO(OO), FeTO(TO), FeOO_APB(OO_APB) {};
 };
 
 struct LatticeParameters{
     double a = 0.0;
     double b = 0.0;
     double c = 0.0;
-    
-    LatticeParameters(double a, double b, double c): a(a), b(b), c(c) {};
 };
 
 struct Angles{
     double alpha = 0.0;
     double beta = 0.0;
     double gamma = 0.0;
-    
-    Angles(double alpha, double beta, double gamma): alpha(alpha), beta(beta), gamma(gamma) {};
 };
 
 struct LinalgVector{
-    double x;
-    double y;
-    double z;
-    
-    LinalgVector(double x=0.0, double y=0.0, double z=0.0): x(x), y(y), z(z){};
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
     
     double selfDot(){
         return x*x + y*y + z*z;
     }
     
     LinalgVector operator-(const LinalgVector& vec2) const{
-        return LinalgVector(x-vec2.x, y-vec2.y, z-vec2.z);
+        return {x-vec2.x, y-vec2.y, z-vec2.z};
     }
     
     LinalgVector operator-() const{
-        return LinalgVector(-x, -y, -z);
+        return {-x, -y, -z};
     }
     
     LinalgVector operator/(double c) const{
-        return LinalgVector(x/c, y/c, z/c);
+        return {x/c, y/c, z/c};
     }
     
     LinalgVector operator+(const LinalgVector& vec2) const{
-        return LinalgVector(x+vec2.x, y+vec2.y, z+vec2.z);
+        return {x+vec2.x, y+vec2.y, z+vec2.z};
     }
     
     LinalgVector operator*(double c) const{
-        return LinalgVector(x*c, y*c, z*c);
+        return {x*c, y*c, z*c};
     }
     
     LinalgVector& operator+=(const LinalgVector& vec2){
@@ -113,9 +112,9 @@ struct LinalgVector{
     }
     
     LinalgVector cross(const LinalgVector& vec2) const{
-        return LinalgVector(y*vec2.z - z*vec2.y,
-                            z*vec2.x - x*vec2.z,
-                            x*vec2.y - y*vec2.x);
+        return {y*vec2.z - z*vec2.y,
+                z*vec2.x - x*vec2.z,
+                x*vec2.y - y*vec2.x};
     }
     
     void normalize(){
@@ -173,8 +172,47 @@ struct LinalgVector{
             z += center;
         }
     }
-    
-    
+};
+
+struct MeasurementSettings{
+    MeasurementType measurementType = MeasurementType::kNone;
+    std::string outputPath = "";
+    std::string structurePath = "";
+    int numParticles = 0.0;
+    int particleSize = 0.0;
+    double measurementField = 0.0;
+    double temperature = 0.0;
+    DipoleInteractions dipoleInteractionHandling = DipoleInteractions::kNoInteractions;
+    double monteCarloSteps = 0.0;
+    int averagingSteps = 0;
+    int numOrientations = 0;
+    double coolingField = 0.0;
+    double upperTemperatureLimit = 0.0;
+    double lowerTemperatureLimit = 0.0;
+    double temperatureStepSize = 0.0;
+    Angles angles;
+    double macrocellSize = 0.0;
+    double anisotropyConstant = 0.0;
+    bool ZFC = false;
+    bool FC = false;
+    bool APB = false;
+    double upperFieldLimit = 0.0;
+    double lowerFieldLimit = 0.0;
+    double fieldStepSize = 0.0;
+    double startingTemperature = 0.0;
+    double coolingSteps = 0.0;
+    double sigma = 0.0;
+    LatticeParameters latticeParameters;
+    ExchangeConstants exchangeConstants;
+    double particleCenter = 0.0;
+    int totalNumAtoms = 0;
+};
+
+struct StructureProperties{
+    int numberOfAtoms;
+    std::vector<LinalgVector> positionVectors;
+    std::vector<StructuralPositions> positionIDs;
+    std::vector<bool> isAPB;
 };
 
 

@@ -6,6 +6,7 @@
 //
 
 #include "testing.hpp"
+MeasurementSettings measurementSettings;
 
 retVals particle_configurations_test(std::string mode, std::string infile, std::string outfile, double c){
     std::string numf = "1";
@@ -14,10 +15,7 @@ retVals particle_configurations_test(std::string mode, std::string infile, std::
 
     std::string spin_file = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/spins_" + numf + ".txt";
    // Crystal crystal(struct_file, "brute_force", -21.0,-8.6,-28.1,-106.28,3.25e-25,0.0,0.0,-45.0, 0.1, center, 8.3965,8.3965,8.3965,0.03);
-    Crystal crystal(struct_file, DipoleInteractions::kBruteForce,
-                    ExchangeConstants(0.0,-8.6,-28.1,-106.28) ,3.25e-25,
-                    {0.0,0.0,-45.0}, 0.1, center,
-                    LatticeParameters(8.3965,8.3965,8.3965),0.03);
+    Crystal crystal(measurementSettings);
     
     // output file
     std::string fname = outfile;
@@ -103,10 +101,7 @@ void calc_dipole_field(){
     std::string struct_file ="/Users/tobiaskohler/PhD/APB-Paper/Monte-Carlo_Simulation/New_simulations_different_sizes/D11/D11_no_dip/5T_noAPB/D11_structure_noAPB_" + numf;
     std::string spin_file = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/spins_" + numf + ".txt";
     
-    Crystal crystal(struct_file, DipoleInteractions::kBruteForce,
-                    ExchangeConstants(0.0,-8.6,-28.1,-106.28) ,3.25e-25,
-                    {0.0,0.0,-45.0}, 0.1, center,
-                    LatticeParameters(8.3965,8.3965,8.3965),0.03);
+    Crystal crystal(measurementSettings);
     
     std::string fname = "/Users/tobiaskohler/PhD/APB-Paper/tests_structures_MC/90deg_domain_APB_D11.txt";
     std::ofstream dipole_field;
@@ -143,10 +138,7 @@ void relaxation_test(double size, double sigma, int steps, bool APB,
     double center = size/2.0+0.5;
     double temp = 0.01;
   
-    Crystal crystal(struct_file, DipoleInteractions::kNoInteractions,
-                    ExchangeConstants(0.0,-8.6,-28.1,-106.28) ,3.25e-25,
-                    {0.0,0.0,-45.0}, 0.1, center,
-                    LatticeParameters(8.3965,8.3965,8.3965),sigma);
+    Crystal crystal(measurementSettings);
     
     int numAtoms = (int)crystal.atoms.size();
    
@@ -216,10 +208,7 @@ void sigma_tests(double sigma){
     sigma_test.open(outfile);
     std::string crystal_file = "/Users/tobiaskohler/PhD/thesis/Simulations/ZFC_tests/sigma_tests/D8_structure_noAPB_1";
     
-    Crystal crystal(crystal_file, DipoleInteractions::kNoInteractions,
-                    ExchangeConstants(-21.0,-8.6,-28.1,-106.28) ,3.25e-25,
-                    {0.0,0.0,-45.0}, 0.1, 4.5,
-                    LatticeParameters(8.3965,8.3965,8.3965),sigma);
+    Crystal crystal(measurementSettings);
   
     LinalgVector oldSpin;
     
