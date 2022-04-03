@@ -1,13 +1,5 @@
-//
-//  Crystal2.hpp
-//  MCS2
-//
-//  Created by Tobias Köhler on 06.01.21.
-//  Copyright © 2021 Tobias Köhler. All rights reserved.
-//
-
-#ifndef Crystal_hpp
-#define Crystal_hpp
+#ifndef Crystal_h
+#define Crystal_h
 
 #include <stdio.h>
 #include <vector>
@@ -21,38 +13,29 @@
 #include "HelperStructs.hpp"
 #include "Parsers.hpp"
 
-
-
 class Crystal{
 public:
     std::vector<Atom> atoms;
-    LatticeParameters lattice_pars;
-    double center;
+    MeasurementSettings measurementSettings;
+    Crystal(MeasurementSettings);
+    Crystal(){};
     
-    Crystal(std::string filename, DipoleInteractions dipoleInteractions,
-            ExchangeConstants exchange_constants,
-            double anisotropyConstant,
-            LinalgVector angles,
-            double macrocell_size, double center,
-            LatticeParameters lattice_pars, double sigma);
-    void rotateCrystal(LinalgVector, double);
+    void rotateCrystal();
     void randomOrientation();
     void alignAlongRandomVector();
     void structureSnapshot(std::string filename);
     void resetStructure();
     int outputStats();
-    void setSigma(double sigma);
+    void setSigma();
     void generateDipoleLists();
     void generateNeighbourLists();
-    void initializeStructureFromFile(std::string filename,
-                                  DipoleInteractions dipoleInteractions,
-                                  ExchangeConstants exchange_constants,
-                                  double anisotropyConstant);
-    
+    void initializeStructureFromFile();
+    int getNumberOfAtoms();
     std::vector<Macrocell> macrocells;
-    void generateMacrocells(double macrocell_size);
+    void generateMacrocells();
     void saveMacrocells(std::string filename);
-    
+    void performMonteCarloSteps(int numberOfSteps, double measurementField, double temperature);
+    LinalgVector getNetSpinVector();
 };
 
-#endif /* Crystal2_hpp */
+#endif

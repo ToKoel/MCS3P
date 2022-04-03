@@ -9,25 +9,21 @@
 #define Parsers_hpp
 
 #include <vector>
-#include "HelperStructs.hpp"
 #include <string>
 #include <fstream>
-
-
-struct StructureProperties{
-    int numberOfAtoms;
-    std::vector<LinalgVector> positionVectors;
-    std::vector<StructuralPositions> positionIDs;
-    std::vector<bool> isAPB;
-};
+#include <iostream>
+#include <regex>
+#include <algorithm>
+#include "HelperStructs.hpp"
 
 class StructureFileParser{
-    std::string filename;
 public:
-    StructureProperties parseStructureFile();
-    
-    StructureFileParser(std::string filename): filename(filename){};
+    static StructureProperties parseStructureFile(std::string filename);
 };
 
+class CommandLineParser{
+public:
+    static MeasurementSettings parseCommandline(std::string argv);
+};
 
 #endif /* Parsers_hpp */

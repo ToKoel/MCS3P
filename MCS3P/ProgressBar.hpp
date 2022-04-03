@@ -15,6 +15,20 @@
 
 class ProgressBar{
 public:
+    ProgressBar(){initialize();};
+    
+    void step(double value, const std::string& status){
+        set_progress(value);
+        set_status_text(status);
+    }
+    
+    void initialize(){
+        set_bar_width(50);
+        fill_bar_progress_with("■");
+        fill_bar_remainder_with(" ");
+        update(0);
+    }
+    
     void set_progress(double value){
         //std::unique_lock<std::mutex> lock{mutex_};
         progress_ = value;

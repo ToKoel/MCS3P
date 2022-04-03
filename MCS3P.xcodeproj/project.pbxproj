@@ -32,6 +32,10 @@
 /* Begin PBXFileReference section */
 		FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parsers.cpp; sourceTree = "<group>"; };
 		FA3ED7C627DCDB44009E99A1 /* Parsers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parsers.hpp; sourceTree = "<group>"; };
+		FA3ED7E127F9F131009E99A1 /* generate_json_files.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_json_files.py; sourceTree = "<group>"; };
+		FA3ED7E227F9F14B009E99A1 /* generate_nanoparticle.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_nanoparticle.py; sourceTree = "<group>"; };
+		FA3ED7E327F9F169009E99A1 /* crystal.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = crystal.py; sourceTree = "<group>"; };
+		FA3ED7E427F9FCFB009E99A1 /* parsers.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = parsers.py; sourceTree = "<group>"; };
 		FA6C69CA2634258F008BB914 /* MCS3P */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCS3P; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA6C69CD2634258F008BB914 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FA6C69D626342698008BB914 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../../../usr/local/Cellar/llvm/12.0.0/lib/libomp.dylib; sourceTree = "<group>"; };
@@ -41,7 +45,6 @@
 		FA6C69DE26342790008BB914 /* Atom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Atom.hpp; sourceTree = "<group>"; };
 		FA6C69DF26342790008BB914 /* Crystal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Crystal.hpp; sourceTree = "<group>"; };
 		FA6C69E026342790008BB914 /* Crystal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Crystal.cpp; sourceTree = "<group>"; };
-		FA6C69E126342790008BB914 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
 		FA6C69E42634279A008BB914 /* randNumGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = randNumGenerator.hpp; sourceTree = "<group>"; };
 		FA6C69E52634279A008BB914 /* randNumGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = randNumGenerator.cpp; sourceTree = "<group>"; };
 		FA6C69E62634279A008BB914 /* Measurement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Measurement.cpp; sourceTree = "<group>"; };
@@ -96,12 +99,15 @@
 				FA6C69E42634279A008BB914 /* randNumGenerator.hpp */,
 				FA6C69E52634279A008BB914 /* randNumGenerator.cpp */,
 				FA6C69DD26342790008BB914 /* constants.h */,
-				FA6C69E126342790008BB914 /* JSON.h */,
+				FA3ED7E127F9F131009E99A1 /* generate_json_files.py */,
+				FA3ED7E227F9F14B009E99A1 /* generate_nanoparticle.py */,
+				FA3ED7E327F9F169009E99A1 /* crystal.py */,
 				FA79365D264D240F0087D45D /* ProgressBar.hpp */,
 				FA79369D26890BE10087D45D /* testing.cpp */,
 				FA79369E26890BE20087D45D /* testing.hpp */,
 				FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */,
 				FA3ED7C627DCDB44009E99A1 /* Parsers.hpp */,
+				FA3ED7E427F9FCFB009E99A1 /* parsers.py */,
 			);
 			path = MCS3P;
 			sourceTree = "<group>";
