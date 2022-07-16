@@ -12,8 +12,12 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <functional>
+#include <map>
 #include <regex>
 #include <algorithm>
+#include <stdexcept>
 #include "HelperStructs.hpp"
 
 class StructureFileParser{
@@ -23,7 +27,7 @@ public:
 
 class CommandLineParser{
 public:
-    static MeasurementSettings parseCommandline(std::string argv);
+    static MeasurementSettings parseCommandline(char *argv[]);
 };
 
 #endif /* Parsers_hpp */

@@ -31,11 +31,12 @@ static std::vector<std::string> DipoleInteractionTypes =
     "macrocell"
 };
 
-enum class StructuralPositions{ kOctahedral, kTetrahedral };
+enum class StructuralPositions{ kOctahedral, kTetrahedral, kNone };
 static std::vector<std::string> StructurePositionTypes =
 {
     "octahedral",
-    "tetrahedral"
+    "tetrahedral",
+    "none"
 };
 
 struct ExchangeConstants{
@@ -213,6 +214,15 @@ struct StructureProperties{
     std::vector<LinalgVector> positionVectors;
     std::vector<StructuralPositions> positionIDs;
     std::vector<bool> isAPB;
+};
+
+struct CrystalInformation{
+    std::vector<std::string> symmetryElements;
+    std::vector<LinalgVector> coordinates;
+    std::vector<std::string> elements;
+    std::vector<std::string> labels;
+    LatticeParameters latticeParameters;
+    std::string chemicalName;
 };
 
 

@@ -44,16 +44,15 @@ class Atom {
 public:
     LinalgVector positionVector{0.0, 0.0, 0.0};
     LinalgVector spinVector{0.0, 0.0, 0.0};
+    LinalgVector tempSpinVector{0.0, 0.0, 0.0};
     LinalgVector unitCellVector{0.0, 0.0, 0.0};
     ExchangeConstants exchangeConstants{0.0, 0.0, 0.0, 0.0};
     double anisotropyConstant = 0.0;
-   
-    StructuralPositions structuralPositionID = StructuralPositions::kOctahedral;
+    StructuralPositions structuralPositionID = StructuralPositions::kNone;
     DipoleInteractions dipoleInteractionHandling = DipoleInteractions::kNoInteractions;
     
     bool isApbAtom = false;
     bool isSurfaceAtom = false;
-    bool macrocell_method = false;
     
     double sigma = 0.0; // defines opening angle of Gaussian cone
     double MagMagMu0 = MAGFE3*MAGFE3*MU0;
@@ -81,15 +80,15 @@ public:
     double zeeman(double);
     double zeeman3D(LinalgVector B);
     double dipole();
-    void dipole_field(double*);
+    LinalgVector dipole_field();
     
     // trial move functions
-    void uniform(LinalgVector& oldSpin);
-    void uniform_ziggurat(LinalgVector& oldSpin);
-    void spin_flip(LinalgVector& oldSpin);
-    void angle(LinalgVector& oldSpin);
-    void hinzke_nowak(LinalgVector& oldSpin);
-    void cattaneo_sun(LinalgVector& oldSpin);
+    void uniform();
+    void uniform_ziggurat();
+    void spin_flip();
+    void angle();
+    void hinzke_nowak();
+    void cattaneo_sun();
     
     void MonteCarloStep(double Bx, double temperature);
 };

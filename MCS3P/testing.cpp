@@ -107,11 +107,10 @@ void calc_dipole_field(){
     std::ofstream dipole_field;
     dipole_field.open(fname, std::fstream::out);
     
-    double H_dip[3];
     
     for(int i=0; i< crystal.atoms.size(); i++){
-        crystal.atoms[i].dipole_field(H_dip);
-        dipole_field << crystal.atoms[i].positionVector.x << " " << crystal.atoms[i].positionVector.y << " " << crystal.atoms[i].positionVector.z << " " << H_dip[0] << " " << H_dip[1] << " " <<  H_dip[2] << std::endl;
+        LinalgVector H_dip = crystal.atoms[i].dipole_field();
+        dipole_field << crystal.atoms[i].positionVector.x << " " << crystal.atoms[i].positionVector.y << " " << crystal.atoms[i].positionVector.z << " " << H_dip.x << " " << H_dip.y << " " <<  H_dip.z << std::endl;
     }
 }
 
@@ -210,12 +209,11 @@ void sigma_tests(double sigma){
     
     Crystal crystal(measurementSettings);
   
-    LinalgVector oldSpin;
     
     for(int i=0; i< 10000; i++){
         crystal.atoms[0].spinVector = {1.0, 0.0, 0.0};
         
-        crystal.atoms[0].angle(oldSpin);
+        crystal.atoms[0].angle();
         sigma_test << crystal.atoms[0].spinVector.x << " " << crystal.atoms[0].spinVector.y << " " << crystal.atoms[0].spinVector.z << std::endl;
     }
 }

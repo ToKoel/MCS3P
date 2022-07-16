@@ -7,7 +7,7 @@
 
 long rnd250();
 void seed250(long);
-void marsaglia(LinalgVector&);
+LinalgVector marsaglia();
 double rand0001_0999();
 int rand0_crystalSize(int dimension);
 double rand0_1();
