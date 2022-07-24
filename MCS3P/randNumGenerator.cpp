@@ -43,7 +43,7 @@ void seed250(long seed) {
   }
 }
 
-double rand0001_0999() { return ((rnd250() + 1.0) / (RND250_MAX + 2.0)); }
+double rand0001_0999() { return ((static_cast<double>(rnd250()) + 1.0) / (RND250_MAX + 2.0)); }
 
 double gaussian_marsaglia(double stdDev) {
   static double spare;
@@ -66,7 +66,7 @@ double gaussian_marsaglia(double stdDev) {
   }
 }
 
-LinalgVector marsaglia() {
+utility::LinalgVector marsaglia() {
   double rsq, y1, y2;
 
   do {
@@ -99,8 +99,8 @@ double rand0_90() {
 
 constexpr double angleConversionFactor = 180.0 / M_PI;
 
-void rand0_360(LinalgVector &angles) {
-  LinalgVector V = marsaglia();
+void rand0_360(utility::LinalgVector &angles) {
+    utility::LinalgVector V = marsaglia();
   angles = {std::acos(V.x), std::acos(V.y), std::acos(V.z)};
   angles *= angleConversionFactor;
 }
@@ -334,12 +334,12 @@ double gaussian_ziggurat() {
   double x, y;
 
   while (1) {
-    U = rnd250();
+    U = static_cast<unsigned long>(rnd250());
     i = U & 0x0000007F;    /* 7 bit to choose the step */
     sign = U & 0x00000080; /* 1 bit for the sign */
     j = U >> 8;            /* 24 bit for the x-value */
 
-    x = j * wtab[i];
+    x = static_cast<double>(j) * wtab[i];
     if (j < ktab[i])
       break;
 

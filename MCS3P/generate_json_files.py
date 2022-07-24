@@ -61,6 +61,7 @@ if __name__ == "__main__":
     parser.add_argument('--latticepar', type=str, default="")
     parser.add_argument('--exchangeconstants', type=str, default="")
     parser.add_argument('--APB_constant', type=float, default=0.0)
+    parser.add_argument('--nearest_neighbour_distance', type=float, default=0.2505)
     args = parser.parse_args()
     generate(args)
 

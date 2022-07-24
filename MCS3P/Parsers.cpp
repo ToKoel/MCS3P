@@ -7,33 +7,33 @@
 
 #include "Parsers.hpp"
 
-StructureProperties
+utility::StructureProperties
 StructureFileParser::parseStructureFile(std::string filename) {
   std::ifstream inFile;
   inFile.open(filename);
   std::string line;
-  int num = 0;
+  size_t num = 0;
   while (std::getline(inFile, line)) {
     ++num;
   }
   inFile.close();
 
-  StructureProperties structureProperties;
+    utility::StructureProperties structureProperties;
   structureProperties.numberOfAtoms = num;
   structureProperties.positionVectors.resize(num);
   structureProperties.positionIDs.resize(num);
   structureProperties.isAPB.resize(num);
 
   inFile.open(filename);
-  for (int i = 0; i < num; i++) {
+  for (size_t i = 0; i < static_cast<size_t>(num); i++) {
     double xr, yr, zr;
     double posr, apbr, uc_xr, uc_yr, uc_zr;
     inFile >> xr >> yr >> zr >> posr >> apbr >> uc_xr >> uc_yr >> uc_zr;
     structureProperties.positionVectors[i] = {xr, yr, zr};
     if (posr == 1) {
-      structureProperties.positionIDs[i] = StructuralPositions::kTetrahedral;
+        structureProperties.positionIDs[i] = utility::StructuralPositions::kTetrahedral;
     } else {
-      structureProperties.positionIDs[i] = StructuralPositions::kOctahedral;
+        structureProperties.positionIDs[i] = utility::StructuralPositions::kOctahedral;
     }
     if (apbr == 0) {
       structureProperties.isAPB[i] = false;
@@ -46,27 +46,7 @@ StructureFileParser::parseStructureFile(std::string filename) {
   return structureProperties;
 }
 
-size_t split(const std::string &txt, std::vector<std::string> &strs, char ch) {
-  size_t pos = txt.find(ch);
-  size_t initialPos = 0;
-  strs.clear();
-
-  // Decompose statement
-  while (pos != std::string::npos) {
-    strs.push_back(txt.substr(initialPos, pos - initialPos));
-    initialPos = pos + 1;
-
-    pos = txt.find(ch, initialPos);
-  }
-
-  // Add the last one
-  strs.push_back(
-      txt.substr(initialPos, std::min(pos, txt.size()) - initialPos + 1));
-
-  return strs.size();
-}
-
-MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
+utility::MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
   std::string measurementSettingsFile = argv[0];
   std::ifstream file(measurementSettingsFile);
   std::string str;
@@ -77,7 +57,7 @@ MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
     throw std::invalid_argument("file doesn't exist");
   }
 
-  MeasurementSettings measurementSettings = {};
+    utility::MeasurementSettings measurementSettings = {};
 
   while (std::getline(file, str)) {
     if (std::regex_match(str, regex)) {
@@ -86,33 +66,33 @@ MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
       std::string value = str.substr(str.find(delimiter) + 2);
       if (token == "measurement") {
         if (value == "M vs B") {
-          measurementSettings.measurementType = MeasurementType::kMvsH;
+            measurementSettings.measurementType = utility::MeasurementType::kMvsH;
         } else if (value == "M vs T") {
-          measurementSettings.measurementType = MeasurementType::kMvsT;
+            measurementSettings.measurementType = utility::MeasurementType::kMvsT;
         } else if (value == "spin structure") {
-          measurementSettings.measurementType = MeasurementType::kSpinStructure;
+            measurementSettings.measurementType = utility::MeasurementType::kSpinStructure;
         } else if (value == "testing") {
-          measurementSettings.measurementType = MeasurementType::kTest;
+            measurementSettings.measurementType = utility::MeasurementType::kTest;
         } else {
-          measurementSettings.measurementType = MeasurementType::kNone;
+            measurementSettings.measurementType = utility::MeasurementType::kNone;
         }
       } else if (token == "dipole") {
         if (value == "brute_force") {
           measurementSettings.dipoleInteractionHandling =
-              DipoleInteractions::kBruteForce;
+            utility::DipoleInteractions::kBruteForce;
         } else if (value == "macrocell") {
           measurementSettings.dipoleInteractionHandling =
-              DipoleInteractions::kMacrocellMethod;
+            utility::DipoleInteractions::kMacrocellMethod;
         } else {
           measurementSettings.dipoleInteractionHandling =
-              DipoleInteractions::kNoInteractions;
+            utility::DipoleInteractions::kNoInteractions;
         }
       } else if (token == "output") {
         measurementSettings.outputPath = value;
       } else if (token == "structure_path") {
         measurementSettings.structurePath = value;
       } else if (token == "num_particles") {
-        measurementSettings.numParticles = std::stod(value);
+        measurementSettings.numParticles = std::stoi(value);
       } else if (token == "particle_size") {
         measurementSettings.particleSize = std::stoi(value);
       } else if (token == "meas_field") {
@@ -187,6 +167,8 @@ MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
         measurementSettings.latticeParameters.b = std::stod(value);
       } else if (token == "lattice_c") {
         measurementSettings.latticeParameters.c = std::stod(value);
+      } else if (token == "nearest_neighbour_distance") {
+        measurementSettings.nearestNeighbourDistance = std::stod(value);
       }
     }
   }

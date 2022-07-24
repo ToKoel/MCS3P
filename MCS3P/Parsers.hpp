@@ -20,14 +20,16 @@
 #include <stdexcept>
 #include "HelperStructs.hpp"
 
+size_t split(const std::string, std::vector<std::string>, char);
+
 class StructureFileParser{
 public:
-    static StructureProperties parseStructureFile(std::string filename);
+    static utility::StructureProperties parseStructureFile(std::string filename);
 };
 
 class CommandLineParser{
 public:
-    static MeasurementSettings parseCommandline(char *argv[]);
+    static utility::MeasurementSettings parseCommandline(char *argv[]);
 };
 
 #endif /* Parsers_hpp */

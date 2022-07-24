@@ -9,11 +9,39 @@
 #define HelperStructs_h
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <cmath>
-#include "constants.h"
+#include "constants.hpp"
 #include <type_traits>
+
+namespace utility {
+
+// function to generate field and temperature arrays
+template <typename T> std::vector<T> arange(T start, T stop, T step = 1) {
+  std::vector<T> values;
+  if (start < stop) {
+    for (T value = start; value < stop; value += step)
+      values.push_back(value);
+  } else {
+    for (T value = start; value > stop; value -= step)
+      values.push_back(value);
+  }
+  return values;
+}
+
+
+// helper function to convert doubles to string for filenames
+template <typename T> std::string to_string(const T &obj, int prec) {
+  std::ostringstream stream;
+  stream.precision(prec);
+  stream << std::fixed;
+  stream << obj;
+  std::string stringVar = stream.str();
+  std::replace(stringVar.begin(), stringVar.end(), '.', 'd');
+  return stringVar;
+}
 
 enum class MeasurementType {
     kNone,
@@ -23,8 +51,14 @@ enum class MeasurementType {
     kTest
 };
 
+enum class MeasurementMode{
+    ZFC,
+    FC,
+    Field
+};
+
 enum class DipoleInteractions{ kNoInteractions=0, kBruteForce, kMacrocellMethod };
-static std::vector<std::string> DipoleInteractionTypes =
+const static std::vector<std::string> DipoleInteractionTypes =
 {
     "noDip",
     "brute",
@@ -32,7 +66,7 @@ static std::vector<std::string> DipoleInteractionTypes =
 };
 
 enum class StructuralPositions{ kOctahedral, kTetrahedral, kNone };
-static std::vector<std::string> StructurePositionTypes =
+const static std::vector<std::string> StructurePositionTypes =
 {
     "octahedral",
     "tetrahedral",
@@ -67,8 +101,16 @@ struct LinalgVector{
         return x*x + y*y + z*z;
     }
     
+    LinalgVector square(){
+        return {x*x, y*y, z*z};
+    }
+    
     LinalgVector operator-(const LinalgVector& vec2) const{
         return {x-vec2.x, y-vec2.y, z-vec2.z};
+    }
+    
+    LinalgVector hadamard(const LinalgVector& vec2) const{
+        return {x*vec2.x, y*vec2.y, z*vec2.z};
     }
     
     LinalgVector operator-() const{
@@ -127,10 +169,10 @@ struct LinalgVector{
         }
     }
     
-    void rotate(double alpha, double beta, double gamma, double center = 0.0){
-        double alphaRad = alpha * PI/180;
-        double betaRad = beta * PI/180;
-        double gammaRad = gamma * PI/180;
+    void rotate(Angles angles, double center = 0.0){
+        double alphaRad = angles.alpha * PI/180;
+        double betaRad = angles.beta * PI/180;
+        double gammaRad = angles.gamma * PI/180;
         
         double temp_x, temp_y, temp_z = 0.0;
         
@@ -173,12 +215,18 @@ struct LinalgVector{
             z += center;
         }
     }
+    
+    std::string toString()
+    {
+        return std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z);
+    }
 };
+
 
 struct MeasurementSettings{
     MeasurementType measurementType = MeasurementType::kNone;
-    std::string outputPath = "";
-    std::string structurePath = "";
+    std::string outputPath;
+    std::string structurePath;
     int numParticles = 0.0;
     int particleSize = 0.0;
     double measurementField = 0.0;
@@ -207,10 +255,11 @@ struct MeasurementSettings{
     ExchangeConstants exchangeConstants;
     double particleCenter = 0.0;
     int totalNumAtoms = 0;
+    double nearestNeighbourDistance = 0.0;
 };
 
 struct StructureProperties{
-    int numberOfAtoms;
+    size_t numberOfAtoms;
     std::vector<LinalgVector> positionVectors;
     std::vector<StructuralPositions> positionIDs;
     std::vector<bool> isAPB;
@@ -225,5 +274,11 @@ struct CrystalInformation{
     std::string chemicalName;
 };
 
+struct Environment{
+    double magneticFieldScalar = 0.0;
+    double temperatureKelvin = 0.0;
+};
+
+}
 
 #endif

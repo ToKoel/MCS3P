@@ -97,7 +97,7 @@ public:
     
 private:
     std::mutex mutex_;
-    float progress_{0.0f};
+    double progress_{0.0f};
     size_t bar_width_{60};
     std::string fill_{"#"}, remainder_{" "}, status_text_{""};
 };
