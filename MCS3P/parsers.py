@@ -5,32 +5,7 @@ Created on Wed Nov 25 16:45:51 2020
 
 @author: tobiaskohler
 
-"""
-
-class XtlParser():
-    
-    def __init__(self, filename =""):
-        self.filename = filename
-        self.elementlist = list()
-        self.coordinatelist = list()
-        self.latticepar = 0
-        self.positions = list()
-  
-        with open(self.filename) as fp: 
-            counter = 1
-            for line in fp:
-                if line.split()[0] == "EOF":
-                    break
-                if counter == 3:
-                    self.latticepar = float(line.split()[0])
-                if counter >= 8:
-                    l = line.split()
-                    self.elementlist.append(l[0])
-                    self.coordinatelist.append([float(l[1]),float(l[2]),float(l[3])])
-                counter +=1
-                
-        print("File read")
-        
+"""        
 class CifParser():
     """ 
     Class to retrieve information from input CIF files. Currently only 
@@ -57,13 +32,13 @@ class CifParser():
         for n,line in enumerate(lines):
             if "cell_length_a" in line:
                 self.lattice_a = float(line.split()[1])
-            else if "cell_length_b" in line:
+            elif "cell_length_b" in line:
                 self.lattice_b = float(line.split()[1])
-            else if "cell_length_c" in line:
+            elif "cell_length_c" in line:
                 self.lattice_c = float(line.split()[1])            
-            else if "space_group_name" in line:
+            elif "space_group_name" in line:
                 self.spcgr = line.split()[1]
-            else if line == "\n":
+            elif line == "\n":
                 space.append(n)
                 
         for line in lines[space[2]+3:space[3]]:

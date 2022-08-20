@@ -8,10 +8,12 @@ Created on Sat Feb  6 22:22:03 2021
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--input_dir', type=str)
+parser.add_argument('--output_dir', type=str)
 parser.add_argument('--template_file', type=str)
 parser.add_argument('--averaged_file', type=str)
 parser.add_argument('--particle_size', type=int)
@@ -28,41 +30,43 @@ dipole = args.dipole
 center= particle_size/2.0+0.5
 input_dir = args.input_dir
 
-files = []
-for i in range(1,num_particles+1):
-    fname = template_file.replace("template","%d"%(i))
-    fname = fname.replace("None", dipole)
-    files.append(input_dir+fname)
-
+files = os.listdir(args.input_dir)
+files = [os.path.join(args.input_dir, file) for file in files if not "template" in file]
 
 def get_polar(vector):
     phi = np.arctan2(vector[2], vector[1])
     theta = np.arctan(np.sqrt(vector[1]**2+vector[2]**2)/vector[0])*180/np.pi
     return phi,theta
 
-def spin_calcs(file, delimiter,center):
-    x,y,z,u,v,w,t,a = np.loadtxt(file,usecols=(0,1,2,3,4,5,6,7),delimiter=delimiter, unpack=True)
+def spin_calcs(file, delimiter,center, averaged):
+    if not averaged:
+        x,y,z,u,v,w,a = np.loadtxt(file ,delimiter=delimiter, unpack=True, usecols=(0,1,2,3,4,5,7))
+        t = np.loadtxt(file,delimiter=delimiter, unpack=True, usecols=(6), dtype=str)
+        t= [1 if pos == " tetrahedral" else 0 for pos in t]
+    else:
+        x,y,z,u,v,w,t,a = np.loadtxt(file ,delimiter=delimiter, unpack=True, usecols=(0,1,2,3,4,5,6,7))
     
     xn = u/np.sqrt(u**2+v**2+w**2)
     yn = v/np.sqrt(u**2+v**2+w**2)
     zn = w/np.sqrt(u**2+v**2+w**2)
     
-    u = xn
-    v = yn
-    w = zn
+    u = np.nan_to_num(xn, nan=0.0)
+    v = np.nan_to_num(yn, nan=0.0)
+    w = np.nan_to_num(zn, nan=0.0)
 
     theta, theta_apb = [],[]
     phi, phi_apb = [],[]
     position = []
     
     for i in range(len(u)):
-        if a[i] == 1:
-            theta_apb.append(np.arctan(np.sqrt(v[i]**2+w[i]**2)/u[i])*180/np.pi)
-            phi_apb.append(np.arctan2(w[i], v[i]))
+        if u[i] != 0.0:
+            if a[i] == 1:
+                theta_apb.append(np.arctan(np.sqrt(v[i]**2+w[i]**2)/u[i])*180/np.pi)
+                phi_apb.append(np.arctan2(w[i], v[i]))
         
-        position.append(int(t[i]))
-        theta.append(np.arctan(np.sqrt(v[i]**2+w[i]**2)/u[i])*180/np.pi)
-        phi.append(np.arctan2(w[i], v[i]))
+            position.append(int(t[i]))
+            theta.append(np.arctan(np.sqrt(v[i]**2+w[i]**2)/u[i])*180/np.pi)
+            phi.append(np.arctan2(w[i], v[i]))
         
     total_spin = (u.sum(),v.sum(),w.sum())
     
@@ -93,8 +97,8 @@ def spin_calcs(file, delimiter,center):
     return position,theta,phi,theta_apb,phi_apb, phi_total, theta_total,phi_left,theta_left,phi_right,theta_right,xn,yn,zn
 
 
-def plot_polar(ax,fig,file, tet, octa,apb,delimiter,center):
-    position,theta,phi,theta_apb,phi_apb, phi_total, theta_total,phi_left,theta_left,phi_right,theta_right,x,y,z = spin_calcs(file,delimiter,center)
+def plot_polar(ax,fig,file, tet, octa,apb,delimiter,center, averaged):
+    position,theta,phi,theta_apb,phi_apb, phi_total, theta_total,phi_left,theta_left,phi_right,theta_right,x,y,z = spin_calcs(file,delimiter,center,averaged)
     
     if octa:
         alpha_o = 0.6
@@ -145,9 +149,10 @@ def plot_polar(ax,fig,file, tet, octa,apb,delimiter,center):
 fig = plt.figure(figsize=(10,10))
 ax = fig.add_axes([0.1,0.1,0.8,0.8],polar=True)    
 for i in files:
-    plot_polar(ax,fig,i, False, False,False, ",",center)   
-plot_polar(ax,fig,input_dir+averaged_file, True, True,True, " ",center)
-plt.savefig(input_dir+"polar_plot.png", dpi=300)
+    plot_polar(ax,fig,i, False, False,False, ",",center, False)
+    
+plot_polar(ax,fig,os.path.join(args.output_dir, averaged_file), True, True,True, " ",center, True)
+plt.savefig(os.path.join(args.output_dir, "polar_plot.png"), dpi=300)
 #plt.show()
 
 

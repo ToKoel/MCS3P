@@ -7,12 +7,12 @@
 
 long rnd250();
 void seed250(long);
-void marsaglia(LinalgVector&);
+utility::LinalgVector marsaglia();
 double rand0001_0999();
 int rand0_crystalSize(int dimension);
 double rand0_1();
 double rand0_90();
-void rand0_360(LinalgVector&);
+void rand0_360(utility::LinalgVector&);
 int rand0_crystalAtoms(int totalNumAtoms);
 double gaussian_marsaglia(double stdDev);
 double gaussian_ziggurat();

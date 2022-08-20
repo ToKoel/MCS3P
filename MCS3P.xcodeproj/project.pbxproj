@@ -7,13 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA3904092806EEC1005E0A11 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3904082806EEBC005E0A11 /* libgtest.a */; };
+		FA39040B2806EEDA005E0A11 /* libgmock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA39040A2806EED7005E0A11 /* libgmock.a */; };
+		FA39040D2806EEF3005E0A11 /* libomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA39040C2806EEF3005E0A11 /* libomp.dylib */; };
 		FA3ED7C727DCDB44009E99A1 /* Parsers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */; };
+		FA4B5D87288314370037DB66 /* Macrocell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4B5D85288314370037DB66 /* Macrocell.cpp */; };
+		FA4B5D8F288BFAE70037DB66 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4B5D8E288BFAE70037DB66 /* FileIO.cpp */; };
 		FA6C69CE2634258F008BB914 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69CD2634258F008BB914 /* main.cpp */; };
 		FA6C69DB26342787008BB914 /* Atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69DA26342787008BB914 /* Atom.cpp */; };
 		FA6C69E226342791008BB914 /* Crystal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E026342790008BB914 /* Crystal.cpp */; };
 		FA6C69E82634279A008BB914 /* randNumGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E52634279A008BB914 /* randNumGenerator.cpp */; };
 		FA6C69E92634279A008BB914 /* Measurement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C69E62634279A008BB914 /* Measurement.cpp */; };
-		FA6D78A427B154F0004DDDBC /* libomp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA6C69D626342698008BB914 /* libomp.dylib */; };
 		FA79369F26890BE20087D45D /* testing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA79369D26890BE10087D45D /* testing.cpp */; };
 /* End PBXBuildFile section */
 
@@ -30,18 +34,38 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA3904012805E89C005E0A11 /* ParserTests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ParserTests.hpp; sourceTree = "<group>"; };
+		FA3904042805EB72005E0A11 /* testSettings.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = testSettings.json; sourceTree = "<group>"; };
+		FA3904052806E764005E0A11 /* testStructure.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = testStructure.txt; sourceTree = "<group>"; };
+		FA3904082806EEBC005E0A11 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = ThirdParty/gtest/libgtest.a; sourceTree = "<group>"; };
+		FA39040A2806EED7005E0A11 /* libgmock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgmock.a; path = ThirdParty/gmock/libgmock.a; sourceTree = "<group>"; };
+		FA39040C2806EEF3005E0A11 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ThirdParty/openMP/libomp.dylib; sourceTree = "<group>"; };
+		FA3904102806F155005E0A11 /* ThirdParty */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ThirdParty; sourceTree = SOURCE_ROOT; };
+		FA39041128070312005E0A11 /* AtomTests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AtomTests.hpp; sourceTree = "<group>"; };
+		FA390412280B0183005E0A11 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		FA390413280C59C3005E0A11 /* EndToEndTests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EndToEndTests.hpp; sourceTree = "<group>"; };
+		FA390414280C5A16005E0A11 /* CrystalTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrystalTests.h; sourceTree = "<group>"; };
 		FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parsers.cpp; sourceTree = "<group>"; };
 		FA3ED7C627DCDB44009E99A1 /* Parsers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parsers.hpp; sourceTree = "<group>"; };
 		FA3ED7E127F9F131009E99A1 /* generate_json_files.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_json_files.py; sourceTree = "<group>"; };
 		FA3ED7E227F9F14B009E99A1 /* generate_nanoparticle.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_nanoparticle.py; sourceTree = "<group>"; };
-		FA3ED7E327F9F169009E99A1 /* crystal.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = crystal.py; sourceTree = "<group>"; };
+		FA3ED7E327F9F169009E99A1 /* crystal.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = crystal.py; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.python; };
 		FA3ED7E427F9FCFB009E99A1 /* parsers.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = parsers.py; sourceTree = "<group>"; };
+		FA4B5D85288314370037DB66 /* Macrocell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Macrocell.cpp; sourceTree = "<group>"; };
+		FA4B5D86288314370037DB66 /* Macrocell.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Macrocell.hpp; sourceTree = "<group>"; };
+		FA4B5D882885F29B0037DB66 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		FA4B5D8B288AD8790037DB66 /* D8_structure_noAPB */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = D8_structure_noAPB; sourceTree = "<group>"; };
+		FA4B5D8C288AD8A90037DB66 /* D8_structure_noAPB_measurementSettings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = D8_structure_noAPB_measurementSettings.json; sourceTree = "<group>"; };
+		FA4B5D8D288BF56E0037DB66 /* FileIO.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileIO.hpp; sourceTree = "<group>"; };
+		FA4B5D8E288BFAE70037DB66 /* FileIO.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileIO.cpp; sourceTree = "<group>"; };
+		FA4B5DA328B01BD80037DB66 /* average_spin_structure.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = average_spin_structure.py; sourceTree = "<group>"; };
+		FA4B5DA428B026EA0037DB66 /* polar_plot.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = polar_plot.py; sourceTree = "<group>"; };
+		FA4B5DA528B02B770037DB66 /* 3dplot_MC_Mayavi.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = 3dplot_MC_Mayavi.py; sourceTree = "<group>"; };
 		FA6C69CA2634258F008BB914 /* MCS3P */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCS3P; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA6C69CD2634258F008BB914 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		FA6C69D626342698008BB914 /* libomp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libomp.dylib; path = ../../../../usr/local/Cellar/llvm/12.0.0/lib/libomp.dylib; sourceTree = "<group>"; };
 		FA6C69D8263426FD008BB914 /* MCS3P.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MCS3P.entitlements; sourceTree = "<group>"; };
 		FA6C69DA26342787008BB914 /* Atom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Atom.cpp; sourceTree = "<group>"; };
-		FA6C69DD26342790008BB914 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		FA6C69DD26342790008BB914 /* constants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = constants.hpp; sourceTree = "<group>"; };
 		FA6C69DE26342790008BB914 /* Atom.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Atom.hpp; sourceTree = "<group>"; };
 		FA6C69DF26342790008BB914 /* Crystal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Crystal.hpp; sourceTree = "<group>"; };
 		FA6C69E026342790008BB914 /* Crystal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Crystal.cpp; sourceTree = "<group>"; };
@@ -60,13 +84,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA6D78A427B154F0004DDDBC /* libomp.dylib in Frameworks */,
+				FA3904092806EEC1005E0A11 /* libgtest.a in Frameworks */,
+				FA39040B2806EEDA005E0A11 /* libgmock.a in Frameworks */,
+				FA39040D2806EEF3005E0A11 /* libomp.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FA3904032805EB45005E0A11 /* TestFiles */ = {
+			isa = PBXGroup;
+			children = (
+				FA3904042805EB72005E0A11 /* testSettings.json */,
+				FA4B5D8C288AD8A90037DB66 /* D8_structure_noAPB_measurementSettings.json */,
+				FA4B5D8B288AD8790037DB66 /* D8_structure_noAPB */,
+				FA3904052806E764005E0A11 /* testStructure.txt */,
+			);
+			path = TestFiles;
+			sourceTree = "<group>";
+		};
 		FA6C69C12634258F008BB914 = {
 			isa = PBXGroup;
 			children = (
@@ -87,18 +124,27 @@
 		FA6C69CC2634258F008BB914 /* MCS3P */ = {
 			isa = PBXGroup;
 			children = (
+				FA390412280B0183005E0A11 /* README.md */,
 				FA6C69D8263426FD008BB914 /* MCS3P.entitlements */,
+				FA4B5D882885F29B0037DB66 /* CMakeLists.txt */,
 				FA6C69CD2634258F008BB914 /* main.cpp */,
 				FA6C69DE26342790008BB914 /* Atom.hpp */,
 				FA6C69DA26342787008BB914 /* Atom.cpp */,
+				FA4B5D85288314370037DB66 /* Macrocell.cpp */,
+				FA4B5D86288314370037DB66 /* Macrocell.hpp */,
 				FA6C69DF26342790008BB914 /* Crystal.hpp */,
 				FA6C69E026342790008BB914 /* Crystal.cpp */,
 				FA6D78A527B15BCA004DDDBC /* HelperStructs.hpp */,
 				FA6C69E72634279A008BB914 /* Measurement.hpp */,
 				FA6C69E62634279A008BB914 /* Measurement.cpp */,
+				FA4B5D8D288BF56E0037DB66 /* FileIO.hpp */,
+				FA4B5D8E288BFAE70037DB66 /* FileIO.cpp */,
 				FA6C69E42634279A008BB914 /* randNumGenerator.hpp */,
 				FA6C69E52634279A008BB914 /* randNumGenerator.cpp */,
-				FA6C69DD26342790008BB914 /* constants.h */,
+				FA6C69DD26342790008BB914 /* constants.hpp */,
+				FA4B5DA328B01BD80037DB66 /* average_spin_structure.py */,
+				FA4B5DA528B02B770037DB66 /* 3dplot_MC_Mayavi.py */,
+				FA4B5DA428B026EA0037DB66 /* polar_plot.py */,
 				FA3ED7E127F9F131009E99A1 /* generate_json_files.py */,
 				FA3ED7E227F9F14B009E99A1 /* generate_nanoparticle.py */,
 				FA3ED7E327F9F169009E99A1 /* crystal.py */,
@@ -108,6 +154,12 @@
 				FA3ED7C527DCDB44009E99A1 /* Parsers.cpp */,
 				FA3ED7C627DCDB44009E99A1 /* Parsers.hpp */,
 				FA3ED7E427F9FCFB009E99A1 /* parsers.py */,
+				FA3904012805E89C005E0A11 /* ParserTests.hpp */,
+				FA390413280C59C3005E0A11 /* EndToEndTests.hpp */,
+				FA390414280C5A16005E0A11 /* CrystalTests.h */,
+				FA39041128070312005E0A11 /* AtomTests.hpp */,
+				FA3904102806F155005E0A11 /* ThirdParty */,
+				FA3904032805EB45005E0A11 /* TestFiles */,
 			);
 			path = MCS3P;
 			sourceTree = "<group>";
@@ -115,7 +167,9 @@
 		FA6C69D526342698008BB914 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA6C69D626342698008BB914 /* libomp.dylib */,
+				FA39040C2806EEF3005E0A11 /* libomp.dylib */,
+				FA39040A2806EED7005E0A11 /* libgmock.a */,
+				FA3904082806EEBC005E0A11 /* libgtest.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -176,7 +230,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA4B5D87288314370037DB66 /* Macrocell.cpp in Sources */,
 				FA6C69DB26342787008BB914 /* Atom.cpp in Sources */,
+				FA4B5D8F288BFAE70037DB66 /* FileIO.cpp in Sources */,
 				FA6C69E82634279A008BB914 /* randNumGenerator.cpp in Sources */,
 				FA3ED7C727DCDB44009E99A1 /* Parsers.cpp in Sources */,
 				FA79369F26890BE20087D45D /* testing.cpp in Sources */,
@@ -195,11 +251,13 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_ASSIGN_ENUM = YES;
+				CLANG_WARN_ATOMIC_IMPLICIT_SEQ_CST = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -209,6 +267,8 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_FLOAT_CONVERSION = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
@@ -217,11 +277,14 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CLANG_WARN__EXIT_TIME_DESTRUCTORS = NO;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -234,17 +297,34 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
+				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "/Users/tobiaskohler/Desktop/MCS3P/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				WARNING_CFLAGS = "";
 			};
 			name = Debug;
 		};
@@ -254,11 +334,13 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_ASSIGN_ENUM = YES;
+				CLANG_WARN_ATOMIC_IMPLICIT_SEQ_CST = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -268,6 +350,8 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_FLOAT_CONVERSION = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
@@ -276,27 +360,47 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CLANG_WARN__EXIT_TIME_DESTRUCTORS = NO;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
+				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "/Users/tobiaskohler/Desktop/MCS3P/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				WARNING_CFLAGS = "";
 			};
 			name = Release;
 		};
@@ -313,10 +417,17 @@
 				DEVELOPMENT_TEAM = 6ZX92J8N23;
 				ENABLE_HARDENED_RUNTIME = YES;
 				EXCLUDED_ARCHS = arm64;
-				HEADER_SEARCH_PATHS = /usr/local/opt/llvm/lib/clang/12.0.0/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/llvm/14.0.6_1/include,
+					"$(PROJECT_DIR)/ThirdParty/gtest",
+					"$(PROJECT_DIR)/ThirdParty/gmock",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/opt/llvm/lib,
-					/usr/local/Cellar/llvm/12.0.0/lib,
+					/usr/local/Cellar/llvm/14.0.6_1/lib,
+					"$(PROJECT_DIR)/ThirdParty/gtest",
+					"$(PROJECT_DIR)/ThirdParty/gmock",
+					"$(PROJECT_DIR)/ThirdParty/openMP",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.2;
 				OTHER_CFLAGS = "-fopenmp";
@@ -337,10 +448,17 @@
 				DEVELOPMENT_TEAM = 6ZX92J8N23;
 				ENABLE_HARDENED_RUNTIME = YES;
 				EXCLUDED_ARCHS = arm64;
-				HEADER_SEARCH_PATHS = /usr/local/opt/llvm/lib/clang/12.0.0/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/llvm/14.0.6_1/include,
+					"$(PROJECT_DIR)/ThirdParty/gtest",
+					"$(PROJECT_DIR)/ThirdParty/gmock",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/opt/llvm/lib,
-					/usr/local/Cellar/llvm/12.0.0/lib,
+					/usr/local/Cellar/llvm/14.0.6_1/lib,
+					"$(PROJECT_DIR)/ThirdParty/gtest",
+					"$(PROJECT_DIR)/ThirdParty/gmock",
+					"$(PROJECT_DIR)/ThirdParty/openMP",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.2;
 				OTHER_CFLAGS = "-fopenmp";

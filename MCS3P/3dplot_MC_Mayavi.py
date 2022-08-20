@@ -30,9 +30,7 @@ if args.delimiter == None:
 else:
     delimiter=args.delimiter
 
-sfile = input_dir+file
-
-file_r = os.path.splitext(sfile)[0]
+sfile = os.path.join(input_dir, file)
 
 def plot_mayavi(spins, size, x,y,z,u,v,w,t,a):
     
@@ -155,6 +153,7 @@ fig.scene.light_manager.lights[3].intensity = 0.0
 
 
 x,y,z,u,v,w,t,a = np.loadtxt(sfile, usecols=(0,1,2,3,4,5,6,7), delimiter=delimiter, unpack=True)
+
 plot_mayavi(True,0.15,x,y,z,u,v,w,t,a)
 
 mlab.gcf().scene.parallel_projection = True
@@ -177,7 +176,7 @@ fig.scene.camera.zoom(1.2)
 #fig.scene.camera.compute_view_plane_normal()
 #fig.scene.render()
 
-mlab.savefig(file_r+".png", size=(2000,2000))
+mlab.savefig(os.path.join(args.input_dir, "plot_3d.png"), size=(2000,2000))
 #mlab.savefig("D11_new_orientation.png", size=(2000,2000))
 mlab.show()
 

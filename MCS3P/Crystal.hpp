@@ -9,15 +9,15 @@
 
 #include "Atom.hpp"
 #include "randNumGenerator.hpp"
-#include "constants.h"
+#include "constants.hpp"
 #include "HelperStructs.hpp"
 #include "Parsers.hpp"
 
 class Crystal{
 public:
     std::vector<Atom> atoms;
-    MeasurementSettings measurementSettings;
-    Crystal(MeasurementSettings);
+    utility::MeasurementSettings measurementSettings;
+    Crystal(utility::MeasurementSettings);
     Crystal(){};
     
     void rotateCrystal();
@@ -31,11 +31,11 @@ public:
     void generateNeighbourLists();
     void initializeStructureFromFile();
     int getNumberOfAtoms();
-    std::vector<Macrocell> macrocells;
+    //std::vector<Macrocell> macrocells;
     void generateMacrocells();
     void saveMacrocells(std::string filename);
-    void performMonteCarloSteps(int numberOfSteps, double measurementField, double temperature);
-    LinalgVector getNetSpinVector();
+    void performMonteCarloSteps(double numberOfSteps, utility::Environment environment);
+    utility::LinalgVector getNetSpinVector();
 };
 
 #endif
