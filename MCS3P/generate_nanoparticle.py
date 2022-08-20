@@ -16,14 +16,14 @@ class Settings:
         self.diameter = diameter
         self.shape = shape
         self.offset = offset
-        self.fileName = fileName
+        self.filename = fileName
         self.occupancies = occupancies
         self.seed = seed
         self.numAPBs = numAPBs
         self.unitcell = unitcell
         
 def generateFileName(args):
-    fileName = args.output + f"D{args.diameter}_structure_"
+    fileName = args.output + f"/D{args.diameter}_structure_"
     if args.numAPBs > 0:
         fileName += "APB"
     else:
@@ -45,7 +45,7 @@ def generateParticle(args):
     
     labels = (args.atomlabels).split(",")
     occupancies = (args.occupancies).split(",")
-    occupancyDict = {label: occupancy for (label, occupancy) in zip(labels, occupancies)}
+    occupancyDict = {label: float(occupancy) for (label, occupancy) in zip(labels, occupancies)}
 
     unitcell = parsers.CifParser(args.ciffile)
     latticepars = (args.latticepar).split(",")
@@ -61,7 +61,7 @@ def generateParticle(args):
                      generateFileName(args),
                      occupancyDict,
                      SEED,
-                     args.numAPBs))
+                     args.numAPBs, unitcell))
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

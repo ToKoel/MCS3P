@@ -130,8 +130,9 @@ class Crystal():
                                                     int((1-self.occupancies[key])*len(indexList)),
                                                     replace = False)
                                                     
-        vacancies = np.array([vacancies_dict[key] for key in vacancies_dict.keys()]).flatten()
-        self.atoms = np.delete(self.atoms, vacancies)
+        vacancies = np.array([vacancies_dict[key] for key in vacancies_dict.keys()])
+        for vac in vacancies:
+            self.atoms = np.delete(self.atoms, vac)
             
     def generateAPBs(self):
         """
@@ -206,7 +207,7 @@ class Crystal():
                     else 0 for atom in Fe_atoms]
         isAPB = [atom.isAPB for atom in Fe_atoms]
         unit_cell = [atom.ucn for atom in Fe_atoms]
-        data = np.column_stack((*xyz, position, isAPB, unit_cell))
+        data = np.column_stack((xyz, position, isAPB, unit_cell))
         np.savetxt(self.filename, data, fmt='%.5f')
         
     def printStats(self, vacancies_dict, indices_dict):

@@ -14,7 +14,7 @@ std::string FileHandler::generateOutputHeader() {
   std::stringstream stream;
   switch (measurementSettings.measurementType) {
       case utility::MeasurementType::kMvsT:
-    stream << "# structure file: " << measurementSettings.structurePath << "\n";
+    stream << "# structure file: " << measurementSettings.structureFile << "\n";
     stream << "# dipole interactions: "
            << utility::DipoleInteractionTypes[static_cast<size_t>(
                   measurementSettings.dipoleInteractionHandling)]
@@ -48,7 +48,7 @@ std::string FileHandler::generateOutputHeader() {
     break;
 
       case utility::MeasurementType::kMvsH:
-    stream << "# structure file: " << measurementSettings.structurePath << "\n";
+          stream << "# structure file: " << measurementSettings.structureFile << "\n";
     stream << "# dipole interactions: "
            << utility::DipoleInteractionTypes[static_cast<size_t>(
                   measurementSettings.dipoleInteractionHandling)]
@@ -81,7 +81,7 @@ std::string FileHandler::generateOutputHeader() {
     break;
 
       case utility::MeasurementType::kSpinStructure:
-    stream << "# structure_file: " << measurementSettings.structurePath << "\n";
+          stream << "# structure_file: " << measurementSettings.structureFile << "\n";
     stream << "# dipole_interactions: "
            << utility::DipoleInteractionTypes[static_cast<size_t>(
                   measurementSettings.dipoleInteractionHandling)]
@@ -127,9 +127,8 @@ std::string FileHandler::generateOutputHeader() {
 }
 
 std::string FileHandler::generateOutputFilename() {
-  std::string outputFilename = measurementSettings.outputPath;
-  outputFilename += measurementSettings.structurePath.substr(
-      measurementSettings.structurePath.find_last_of("/") + 1);
+    std::string structure_path = measurementSettings.structureFile;
+    std::string outputFilename = measurementSettings.outputPath + "/" + structure_path.substr(structure_path.find_last_of("/") + 1);
   switch (measurementSettings.measurementType) {
       case utility::MeasurementType::kMvsT:
     outputFilename +=
@@ -187,7 +186,6 @@ std::string FileHandler::generateOutputFilename() {
     outputFilename +=
         "_" + utility::to_string(measurementSettings.macrocellSize, 4) + "mcsize";
   }
-
   return outputFilename;
 }
 

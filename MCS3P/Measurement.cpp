@@ -125,23 +125,26 @@ void Measurement::run_MvsB() {
 }
 
 void Measurement::run_spinstructure() {
-    std::cout << "\nOutput filename: " << fileHandler.generateOutputFilename() << "\n";
   std::cout << "\n ------- starting spin structure measurement -------\n"
             << "\n";
 
   Crystal crystal(measurementSettings);
+    std::cout << "Crystal initialized" << std::endl;
 
   // simulated annealing
+    if (!(measurementSettings.startingTemperature < measurementSettings.temperature)){
   std::vector<double> coolingArray =
     utility::arange(measurementSettings.startingTemperature,
              measurementSettings.temperature, measurementSettings.coolingSteps);
   coolingArray.push_back(measurementSettings.temperature);
+    std::cout << "starting cooling" << std::endl;
   for (double temperatureStep : coolingArray) {
     crystal.performMonteCarloSteps(measurementSettings.monteCarloSteps / 100,
                                    {measurementSettings.measurementField,
         temperatureStep});
   }
-
+    }
+    std::cout << "starting relaxation" << std::endl;
   // relaxation
     utility::Environment environment{measurementSettings.measurementField, measurementSettings.temperature};
   crystal.performMonteCarloSteps(measurementSettings.monteCarloSteps, environment);

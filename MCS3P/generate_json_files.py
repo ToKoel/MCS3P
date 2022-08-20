@@ -1,6 +1,8 @@
 import sys
 import argparse
 import json
+import glob
+import os
 
 def splitArg(argument):
     if "," in argument:
@@ -17,21 +19,27 @@ def generate(args):
     del arguments["exchangeconstants"]
     del arguments["latticepar"]
     
-    arguments["Fe_TT"] = exchangeConstants[0]
-    arguments["Fe_OO"] = exchangeConstants[1]
-    arguments["Fe_TO"] = exchangeConstants[2]
-    arguments["lattice_a"] = latticeParameters[0]
-    arguments["lattice_b"] = latticeParameters[1]
-    arguments["lattice_c"] = latticeParameters[2]
+    arguments["Fe_TT"] = float(exchangeConstants[0])
+    arguments["Fe_OO"] = float(exchangeConstants[1])
+    arguments["Fe_TO"] = float(exchangeConstants[2])
+    arguments["lattice_a"] = float(latticeParameters[0])
+    arguments["lattice_b"] = float(latticeParameters[1])
+    arguments["lattice_c"] = float(latticeParameters[2])
     
-    with open("json_test.json", "w") as outfile:
+    if arguments["number"] == 0:
+        arguments["structure_file"] = glob.glob(os.path.join(arguments["structure_file_path"], "D*_template"))[0]
+    else:
+        arguments["structure_file"] = glob.glob(os.path.join(arguments["structure_file_path"], "D*_{}".format(arguments["number"])))[0]
+    
+    with open(os.path.join(arguments["json_file_path"], "settings_{}".format(arguments["number"])), "w") as outfile:
         json.dump(arguments, outfile, indent=4)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--measurement', type=str, default="None")
     parser.add_argument('--output', type=str, default="")
-    parser.add_argument('--structure_path', type=str, default="")
+    parser.add_argument('--structure_file_path', type=str, default="")
+    parser.add_argument('--json_file_path', type=str, default="")
     parser.add_argument('--num_particles', type=int, default=0)
     parser.add_argument('--particle_size', type=int, default=0)
     parser.add_argument('--meas_field', type=float, default=0.0)
@@ -62,6 +70,8 @@ if __name__ == "__main__":
     parser.add_argument('--exchangeconstants', type=str, default="")
     parser.add_argument('--APB_constant', type=float, default=0.0)
     parser.add_argument('--nearest_neighbour_distance', type=float, default=0.2505)
+    parser.add_argument('--number', type=int)
+    parser.add_argument('--seed', type=int)
     args = parser.parse_args()
     generate(args)
 

@@ -7,17 +7,15 @@
 #include "gtest/gtest.h"
 #include <iostream>
 
-int main(int argc, char *argv[]) {
-  seed250(SEED);
-
+int main(int argc, char* argv[]) {
   if (argc > 1) {
       utility::MeasurementSettings measurementSettings =
         CommandLineParser::parseCommandline(argv);
+    seed250(measurementSettings.seed);
     Measurement measurement(measurementSettings);
 
     switch (measurementSettings.measurementType) {
         case utility::MeasurementType::kNone:
-      std::cout << "no measurement selected\n";
       break;
         case utility::MeasurementType::kSpinStructure:
       measurement.run_spinstructure();

@@ -58,6 +58,9 @@
 		FA4B5D8C288AD8A90037DB66 /* D8_structure_noAPB_measurementSettings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = D8_structure_noAPB_measurementSettings.json; sourceTree = "<group>"; };
 		FA4B5D8D288BF56E0037DB66 /* FileIO.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileIO.hpp; sourceTree = "<group>"; };
 		FA4B5D8E288BFAE70037DB66 /* FileIO.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileIO.cpp; sourceTree = "<group>"; };
+		FA4B5DA328B01BD80037DB66 /* average_spin_structure.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = average_spin_structure.py; sourceTree = "<group>"; };
+		FA4B5DA428B026EA0037DB66 /* polar_plot.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = polar_plot.py; sourceTree = "<group>"; };
+		FA4B5DA528B02B770037DB66 /* 3dplot_MC_Mayavi.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = 3dplot_MC_Mayavi.py; sourceTree = "<group>"; };
 		FA6C69CA2634258F008BB914 /* MCS3P */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MCS3P; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA6C69CD2634258F008BB914 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FA6C69D8263426FD008BB914 /* MCS3P.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MCS3P.entitlements; sourceTree = "<group>"; };
@@ -139,6 +142,9 @@
 				FA6C69E42634279A008BB914 /* randNumGenerator.hpp */,
 				FA6C69E52634279A008BB914 /* randNumGenerator.cpp */,
 				FA6C69DD26342790008BB914 /* constants.hpp */,
+				FA4B5DA328B01BD80037DB66 /* average_spin_structure.py */,
+				FA4B5DA528B02B770037DB66 /* 3dplot_MC_Mayavi.py */,
+				FA4B5DA428B026EA0037DB66 /* polar_plot.py */,
 				FA3ED7E127F9F131009E99A1 /* generate_json_files.py */,
 				FA3ED7E227F9F14B009E99A1 /* generate_nanoparticle.py */,
 				FA3ED7E327F9F169009E99A1 /* crystal.py */,

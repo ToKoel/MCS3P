@@ -224,14 +224,14 @@ struct LinalgVector{
 
 
 struct MeasurementSettings{
-    MeasurementType measurementType = MeasurementType::kNone;
+    MeasurementType measurementType{MeasurementType::kNone};
     std::string outputPath;
-    std::string structurePath;
+    std::string structureFile;
     int numParticles = 0.0;
     int particleSize = 0.0;
     double measurementField = 0.0;
     double temperature = 0.0;
-    DipoleInteractions dipoleInteractionHandling = DipoleInteractions::kNoInteractions;
+    DipoleInteractions dipoleInteractionHandling{DipoleInteractions::kNoInteractions};
     double monteCarloSteps = 0.0;
     int averagingSteps = 0;
     int numOrientations = 0;
@@ -256,6 +256,7 @@ struct MeasurementSettings{
     double particleCenter = 0.0;
     int totalNumAtoms = 0;
     double nearestNeighbourDistance = 0.0;
+    long seed = 0;
 };
 
 struct StructureProperties{

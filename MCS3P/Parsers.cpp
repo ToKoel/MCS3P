@@ -47,7 +47,7 @@ StructureFileParser::parseStructureFile(std::string filename) {
 }
 
 utility::MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
-  std::string measurementSettingsFile = argv[0];
+  std::string measurementSettingsFile = argv[1];
   std::ifstream file(measurementSettingsFile);
   std::string str;
   std::string delimiter = ":";
@@ -65,18 +65,20 @@ utility::MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
       std::string token = str.substr(5, str.find(delimiter) - 6);
       std::string value = str.substr(str.find(delimiter) + 2);
       if (token == "measurement") {
-        if (value == "M vs B") {
+          value = value.substr(1, value.size() - 2);
+          if (std::string{value} == "M vs B") {
             measurementSettings.measurementType = utility::MeasurementType::kMvsH;
-        } else if (value == "M vs T") {
+          } else if (std::string{value} == "M vs T") {
             measurementSettings.measurementType = utility::MeasurementType::kMvsT;
-        } else if (value == "spin structure") {
+          } else if (std::string{value} == "spin_structure") {
             measurementSettings.measurementType = utility::MeasurementType::kSpinStructure;
-        } else if (value == "testing") {
+          } else if (std::string{value} == "testing") {
             measurementSettings.measurementType = utility::MeasurementType::kTest;
         } else {
             measurementSettings.measurementType = utility::MeasurementType::kNone;
         }
       } else if (token == "dipole") {
+          value = value.substr(1, value.size() - 2);
         if (value == "brute_force") {
           measurementSettings.dipoleInteractionHandling =
             utility::DipoleInteractions::kBruteForce;
@@ -88,11 +90,15 @@ utility::MeasurementSettings CommandLineParser::parseCommandline(char *argv[]) {
             utility::DipoleInteractions::kNoInteractions;
         }
       } else if (token == "output") {
+          value = value.substr(1, value.size() - 2);
         measurementSettings.outputPath = value;
-      } else if (token == "structure_path") {
-        measurementSettings.structurePath = value;
+      } else if (token == "structure_file") {
+          value = value.substr(1, value.size() - 2);
+        measurementSettings.structureFile = value;
       } else if (token == "num_particles") {
         measurementSettings.numParticles = std::stoi(value);
+      } else if (token == "seed") {
+          measurementSettings.seed = static_cast<long>(std::stoi(value));
       } else if (token == "particle_size") {
         measurementSettings.particleSize = std::stoi(value);
       } else if (token == "meas_field") {

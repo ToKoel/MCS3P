@@ -22,7 +22,7 @@ Crystal::Crystal(utility::MeasurementSettings measurementSettings)
 void Crystal::initializeStructureFromFile() {
     utility::StructureProperties structureProperties =
       StructureFileParser::parseStructureFile(
-          measurementSettings.structurePath);
+          measurementSettings.structureFile);
   for (size_t i = 0; i < structureProperties.numberOfAtoms; i++) {
     atoms.push_back(
         Atom(measurementSettings, structureProperties.positionVectors[i],
